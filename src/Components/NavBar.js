@@ -12,6 +12,7 @@ function NavBar() {
     { name: "Courses", href: "/courses" },
     { name: "Schools And Partners", href: "#" },
     { name: "About", href: "#" },
+    { name: "Control Panel", href: "/controlPanel" },
   ];
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

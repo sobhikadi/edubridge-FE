@@ -11,6 +11,7 @@ function CoursesPage() {
     CourseApi.getCourses()
       .then((response) => {
         setCourses(response);
+        setIsLoaded(false);
       })
       .catch((error) => {
         console.log(error);
@@ -20,10 +21,6 @@ function CoursesPage() {
   useEffect(() => {
     refreshCourses();
   }, []);
-
-  useEffect(() => {
-    setIsLoaded(false);
-  }, [courses]);
 
   return (
     <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -43,7 +40,7 @@ function CoursesPage() {
         </NavLink>
       </div>
       <div className="mt-6 mx-2 md:mx-0  grid grid-cols-1 min-[440px]:grid-cols-2 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {courses.length === 0 && isLoaded && <CardSkeleton />}
+        {isLoaded && <CardSkeleton />}
         {courses.map((course) => {
           if (course.publishDate === null) return;
           return (
