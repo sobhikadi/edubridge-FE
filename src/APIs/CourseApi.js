@@ -25,6 +25,7 @@ const TodoApi = {
       provider: `${courseProvider}`,
       creationDate: `${fullCurrentDate}`,
       publishDate: `${fullCurrentDate}`,
+      publishState: "PENDING",
     });
   },
 };
