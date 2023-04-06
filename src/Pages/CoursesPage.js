@@ -2,15 +2,16 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import CourseApi from "../APIs/CourseApi";
 import CardSkeleton from "../Components/CardSkeleton";
-import image from "../Assets/image.webp";
 import NoResults from "../Components/NoResults";
 
 function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
+
   const refreshCourses = () => {
     CourseApi.getCourses()
       .then((response) => {
+        console.log(response);
         setCourses(response);
         setIsLoaded(true);
       })
@@ -42,16 +43,17 @@ function CoursesPage() {
       </div>
 
       {isLoaded && courses.length === 0 && <NoResults />}
-      {!isLoaded && <CardSkeleton />}
+
       <div className="mt-6 mx-2 md:mx-0  grid grid-cols-1 min-[440px]:grid-cols-2 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        {!isLoaded && <CardSkeleton />}
         {courses.map((course) => {
-          if (course.publishDate === null) return;
+          // if (course.publishDate === null) return;
           return (
             <div key={course.id} className="group relative hover:scale-105">
               <div className="min-h-40 aspect-w-4 aspect-h-2 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none sm:h-44">
                 <img
-                  src={image}
-                  alt={"image"}
+                  src={course.imageUrl}
+                  alt={`image of ${course.title}`}
                   className="h-full w-full object-fill object-center lg:h-full lg:w-full"
                 />
               </div>

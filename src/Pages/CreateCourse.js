@@ -7,6 +7,7 @@ function CreateCourse() {
   const [courseTitle, setCourseTitle] = useState("");
   const [courseProvider, setCourseProvider] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
+  const [file, setFile] = useState(null);
   const [returnedCourseId, setReturnedCourseId] = useState(0);
   const [alert, setAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -22,6 +23,10 @@ function CreateCourse() {
     setCourseDescription(e.target.value);
   };
 
+  const fileChanged = (event) => {
+    setFile(event.target.files[0]);
+  };
+
   const addCourse = (data) => {
     CourseApi.createCourse(data)
       .then((response) => {
@@ -29,7 +34,7 @@ function CreateCourse() {
       })
       .then(() => {})
       .catch((error) => {
-        console.log(error.message);
+        console.log(error.response.data);
         setAlertMessage(`Error: ${error.message}`);
         setMessageColor("text-red-500");
       });
@@ -53,9 +58,10 @@ function CreateCourse() {
 
   const submitForm = (e) => {
     e.preventDefault();
-    const data = { courseTitle, courseProvider, courseDescription };
+    const data = { courseTitle, courseProvider, courseDescription, file };
     addCourse(data);
   };
+
   return (
     <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
       {alertMessage !== "" && (
@@ -117,6 +123,10 @@ function CreateCourse() {
             placeholder="Introduction to React and its features"
             onChange={descriptionChanged}
           ></textarea>
+        </div>
+        <div>
+          <label htmlFor="file">File:</label>
+          <input type="file" id="file" onChange={fileChanged} />
         </div>
 
         <button
