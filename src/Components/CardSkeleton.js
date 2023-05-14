@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 function CardSkeleton(amount) {
-  const loadCards = Array(10).fill(1);
-  console.log(loadCards);
+  const loadCards = Array(12).fill(1);
 
   return loadCards.map((_, i) => (
     <div

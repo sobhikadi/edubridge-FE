@@ -14,7 +14,7 @@ const TodoApi = {
       description: courseDescription,
       provider: courseProvider,
       categoryId: 1,
-      publishState: "PENDING",
+      publishState: "PUBLISHED",
     };
 
     let formData = new FormData();

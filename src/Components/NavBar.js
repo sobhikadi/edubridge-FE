@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -18,7 +18,7 @@ function NavBar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50 ">
+    <header className="relative inset-x-0 top-0 z-50 ">
       <nav
         className="flex items-center justify-between p-6 lg:px-8"
         aria-label="Global"
@@ -95,6 +95,7 @@ function NavBar() {
               <div className="space-y-2 py-6">
                 {navigation.map((item) => (
                   <NavLink
+                    onClick={() => setMobileMenuOpen(false)}
                     key={item.name}
                     to={item.href}
                     className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-slate-200 "
