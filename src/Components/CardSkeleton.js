@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 function CardSkeleton(amount) {
   const loadCards = Array(12).fill(1);

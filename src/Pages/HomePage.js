@@ -38,9 +38,9 @@ function HomePage() {
             EduBridge together for a better future
           </h1>
           <p className="mt-6 text-lg leading-8 text-slate-400">
-            Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui
+            Anim autre id magna aliquot ad ad non desert sunn. Qui inure qui
             lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat
-            fugiat aliqua.
+            fugiat aliquot.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <NavLink

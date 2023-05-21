@@ -1,3 +1,13 @@
 {
-  "cSpell.words": ["headlessui", "heroicons"]
+  "cSpell.words": ["formik", "headlessui", "heroicons", "rarr"],
+  "cSpell.ignoreWords": [
+    "Elit",
+    "amet",
+    "commodo",
+    "cupidatat",
+    "fugiat",
+    "occaecat",
+    "sunt",
+    "veniam"
+  ]
 }

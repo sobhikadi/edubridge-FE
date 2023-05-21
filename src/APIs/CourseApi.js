@@ -1,10 +1,10 @@
-import axios from "axios";
+import axiosInstance from "./AxiosInstance";
 
-const apiUrl = "http://localhost:8080/courses";
+const apiUrl = "/courses";
 
-const TodoApi = {
+const CourseApi = {
   getCourses: () => {
-    return axios.get(apiUrl).then((result) => result.data.courses);
+    return axiosInstance.get(apiUrl).then((result) => result.data.courses);
   },
   createCourse: (data) => {
     const { courseTitle, courseDescription, courseProvider, file } = data;
@@ -13,7 +13,7 @@ const TodoApi = {
       title: courseTitle,
       description: courseDescription,
       provider: courseProvider,
-      categoryId: 1,
+      categoryId: 4,
       publishState: "PUBLISHED",
     };
 
@@ -21,7 +21,7 @@ const TodoApi = {
     formData.append("image", file);
     formData.append("courseInfo", JSON.stringify(courseInfo));
 
-    return axios.post(apiUrl, formData, {
+    return axiosInstance.post(apiUrl, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -29,4 +29,4 @@ const TodoApi = {
   },
 };
 
-export default TodoApi;
+export default CourseApi;

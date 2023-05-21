@@ -5,6 +5,8 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { NavLink } from "react-router-dom";
 import logo from "../Assets/logo.svg";
 import { ReactSVG } from "react-svg";
+import { AuthContext } from "./AuthContext";
+import { useContext } from "react";
 
 function NavBar() {
   const navigationMain = [{ name: "Home", href: "/" }];
@@ -12,10 +14,12 @@ function NavBar() {
     { name: "Courses", href: "/courses" },
     { name: "Schools And Partners", href: "#" },
     { name: "About", href: "#" },
-    { name: "Control Panel", href: "/controlPanel" },
   ];
+  const { ...state } = useContext(AuthContext);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {}, [state.isAuthenticated]);
 
   return (
     <header className="relative inset-x-0 top-0 z-50 ">
@@ -56,12 +60,25 @@ function NavBar() {
         </div>
 
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <NavLink
-            to={"#"}
-            className="text-base font-semibold leading-6 text-slate-200"
-          >
-            Log in <span aria-hidden="true">&rarr;</span>
-          </NavLink>
+          {state.isAuthenticated ? (
+            <NavLink
+              to={"/controlPanel"}
+              className="text-base font-semibold leading-6 text-slate-200"
+            >
+              <img
+                className="inline-block w-12 rounded-full"
+                src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                alt=""
+              />
+            </NavLink>
+          ) : (
+            <NavLink
+              to={"/login"}
+              className="text-base font-semibold leading-6 text-slate-200"
+            >
+              Log in <span aria-hidden="true">&rarr;</span>
+            </NavLink>
+          )}
         </div>
       </nav>
       <Dialog
@@ -105,12 +122,27 @@ function NavBar() {
                 ))}
               </div>
               <div className="py-6">
-                <NavLink
-                  to={"#"}
-                  className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-7 text-slate-200"
-                >
-                  Log in
-                </NavLink>
+                {state.isAuthenticated ? (
+                  <NavLink
+                    to={"/controlPanel"}
+                    className="text-base font-semibold leading-6 text-slate-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <img
+                      className="inline-block w-12 rounded-full"
+                      src="https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      alt=""
+                    />
+                  </NavLink>
+                ) : (
+                  <NavLink
+                    to={"/login"}
+                    className="-mx-3 block rounded-lg py-2.5 px-3 text-base font-semibold leading-7 text-slate-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Log in
+                  </NavLink>
+                )}
               </div>
             </div>
           </div>

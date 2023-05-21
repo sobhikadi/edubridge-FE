@@ -11,7 +11,6 @@ function CoursesPage() {
   const refreshCourses = () => {
     CourseApi.getCourses()
       .then((response) => {
-        console.log(response);
         setCourses(response);
         setIsLoaded(true);
       })
