@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import AuthenticationApi from "../APIs/AuthenticationApi";
 import { AuthContext } from "../Components/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const { updateAuth } = useContext(AuthContext);
@@ -107,12 +107,12 @@ function LoginPage() {
 
             <p className="mt-10 text-center text-md">
               Not a user ?
-              <a
-                href="#"
+              <NavLink
+                to={"/signUp"}
                 className="font-semibold leading-6 text-indigo-400 hover:text-indigo-600"
               >
                 Create an account now!
-              </a>
+              </NavLink>
             </p>
           </div>
         </div>

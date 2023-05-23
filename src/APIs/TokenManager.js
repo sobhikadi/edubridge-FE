@@ -30,7 +30,6 @@ const TokenManager = {
     const claims = TokenManager.getClaims();
     if (!claims) return false;
     const currentTime = Date.now() / 1000;
-    console.log(((claims.exp - currentTime) / 60).toFixed(2));
     return currentTime < claims.exp;
   },
 };

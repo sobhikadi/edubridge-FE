@@ -46,7 +46,7 @@ function CreateCourse() {
   };
 
   useEffect(() => {
-    if (returnedCourseId !== 0) {
+    if (returnedCourseId >= 1) {
       setAlertMessage(
         `Course has been created successfully, course id is ${returnedCourseId}`
       );

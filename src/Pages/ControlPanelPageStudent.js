@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AuthenticationApi from "../APIs/AuthenticationApi";
 import { useContext } from "react";
 
-function ControlPanelPage() {
+function ControlPanelPageStudent() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const { logout } = useContext(AuthContext);
@@ -341,4 +341,4 @@ function ControlPanelPage() {
     </>
   );
 }
-export default ControlPanelPage;
+export default ControlPanelPageStudent;

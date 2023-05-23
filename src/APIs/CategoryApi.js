@@ -2,7 +2,7 @@ import axiosInstance from "./AxiosInstance";
 
 const apiUrl = "/categories";
 
-const TodoApi = {
+const CategoryApi = {
   getCategories: () => {
     return axiosInstance.get(apiUrl).then((result) => result.data.categories);
   },
@@ -14,4 +14,4 @@ const TodoApi = {
   },
 };
 
-export default TodoApi;
+export default CategoryApi;

@@ -11,6 +11,7 @@ const excludedEndpoints = [
   { url: "/login", methods: ["POST"] },
   { url: "/token/refresh", methods: ["POST"] },
   { url: "/courses", methods: ["GET"] },
+  { url: "/countries", methods: ["GET"] },
 ];
 
 // Add a request interceptor
@@ -47,8 +48,6 @@ axiosInstance.interceptors.response.use(
       error.response.status === 401 &&
       !originalRequest._retry
     ) {
-      console.log(error.response);
-
       if (error.response.data.error === "Access token expired") {
         originalRequest._retry = true;
         const refreshToken = TokenManager.getRefreshToken();
@@ -59,7 +58,6 @@ axiosInstance.interceptors.response.use(
             subject: subject,
           })
           .then((response) => {
-            console.log(response);
             if (response.status === 200) {
               TokenManager.setAccessToken(response.data.accessToken);
               TokenManager.setRefreshToken(response.data.refreshToken);

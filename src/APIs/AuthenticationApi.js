@@ -23,7 +23,7 @@ const AuthenticationApi = {
     const subject = TokenManager.getClaims().sub;
 
     if (!refreshToken || !subject) {
-      console.log("You are already logged out, please refresh the page");
+      navigator("login");
     }
 
     axiosInstance
