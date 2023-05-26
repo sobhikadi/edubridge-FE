@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import React from "react";
 import CourseApi from "../APIs/CourseApi";
 import Alert from "../Components/Alert";
+import NotificationContext from "../Components/NotificationContext";
+import { useContext } from "react";
+import NotificationMessage from "../Components/NotificationMessage";
 
 function CreateCourse() {
   const [courseTitle, setCourseTitle] = useState("");
@@ -9,9 +12,16 @@ function CreateCourse() {
   const [courseDescription, setCourseDescription] = useState("");
   const [file, setFile] = useState(null);
   const [returnedCourseId, setReturnedCourseId] = useState(0);
-  const [alert, setAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [messageColor, setMessageColor] = useState("");
+
+  const { notification, setNotification } = useContext(NotificationContext);
+
+  useEffect(() => {
+    if (notification) {
+      setTimeout(() => {
+        setNotification(null);
+      }, 30000);
+    }
+  }, [notification, setNotification]);
 
   const titleChanged = (e) => {
     setCourseTitle(e.target.value);
@@ -34,25 +44,19 @@ function CreateCourse() {
       })
       .then(() => {})
       .catch((error) => {
-        console.log(error.response.data);
-        setAlertMessage(`Error: ${error.message}`);
-        setMessageColor("text-red-500");
+        setNotification({
+          message: error.response.data.message,
+          type: "error",
+        });
       });
-  };
-
-  const onChangeSetAlert = () => {
-    setAlert(false);
-    setAlertMessage("");
   };
 
   useEffect(() => {
     if (returnedCourseId >= 1) {
-      setAlertMessage(
-        `Course has been created successfully, course id is ${returnedCourseId}`
-      );
-      setMessageColor("text-green-500");
-      console.log(alertMessage);
-      setAlert(true);
+      setNotification({
+        message: `Course has been created successfully, course id is ${returnedCourseId}`,
+        type: "success",
+      });
     }
   }, [returnedCourseId]);
 
@@ -64,13 +68,14 @@ function CreateCourse() {
 
   return (
     <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
-      {alertMessage !== "" && (
-        <Alert
-          alertMessage={alertMessage}
-          messageColor={messageColor}
-          onChangeSetAlert={onChangeSetAlert}
+      {notification && (
+        <NotificationMessage
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
         />
       )}
+
       <h2 className=" text-2xl font-bold tracking-tight my-4 text-slate-200">
         Add a course
       </h2>

@@ -14,10 +14,8 @@ const AuthenticationApi = {
         TokenManager.setAccessToken(data.accessToken);
         TokenManager.setRefreshToken(data.refreshToken);
         updateAuth();
-      })
-      .catch((error) => {
-        console.log(error);
       }),
+
   logout: (logout) => {
     const refreshToken = TokenManager.getRefreshToken();
     const subject = TokenManager.getClaims().sub;

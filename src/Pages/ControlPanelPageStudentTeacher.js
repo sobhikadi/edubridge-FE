@@ -4,49 +4,12 @@ import { AuthContext } from "../Components/AuthContext";
 import { useNavigate } from "react-router-dom";
 import AuthenticationApi from "../APIs/AuthenticationApi";
 import { useContext } from "react";
-import AdminApi from "../APIs/AdminApi";
-import NotificationContext from "../Components/NotificationContext";
-import NotificationMessage from "../Components/NotificationMessage";
 
-function ControlPanelPageAdmin({ userData }) {
+function ControlPanelPageStudent() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [userInfo, setUserInfo] = useState(null);
-  const { notification, setNotification } = useContext(NotificationContext);
-
-  useEffect(() => {
-    if (notification) {
-      setTimeout(() => {
-        setNotification(null);
-      }, 5000);
-    }
-  }, [notification, setNotification]);
-
-  const getAdminDetails = () => {
-    const claims = userData;
-    if (claims?.roles?.includes("ADMIN") && claims?.adminId) {
-      AdminApi.getAdmin(claims.adminId)
-        .then((admin) => {
-          setUserInfo(admin);
-          setNotification({
-            message: `Welcome ${admin.firstName} ${admin.lastName}!`,
-            type: "success",
-          });
-        })
-        .catch((error) =>
-          setNotification({
-            message: error.response.data.message,
-            type: "error",
-          })
-        );
-    }
-  };
-
-  useEffect(() => {
-    getAdminDetails();
-  }, [userData]);
 
   function openModal() {
     setIsOpen(true);
@@ -85,13 +48,6 @@ function ControlPanelPageAdmin({ userData }) {
 
   return (
     <>
-      {notification && (
-        <NotificationMessage
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
-        />
-      )}
       <button
         type="button"
         className="inline-flex items-center p-2 mb-3 ml-3 text-sm text-slate-200 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-slate-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -385,4 +341,4 @@ function ControlPanelPageAdmin({ userData }) {
     </>
   );
 }
-export default ControlPanelPageAdmin;
+export default ControlPanelPageStudent;

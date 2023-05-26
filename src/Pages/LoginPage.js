@@ -1,13 +1,25 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import AuthenticationApi from "../APIs/AuthenticationApi";
 import { AuthContext } from "../Components/AuthContext";
 import { NavLink, useNavigate } from "react-router-dom";
+import NotificationContext from "../Components/NotificationContext";
+import NotificationMessage from "../Components/NotificationMessage";
 
 function LoginPage() {
   const { updateAuth } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { notification, setNotification } = useContext(NotificationContext);
+
+  useEffect(() => {
+    if (notification) {
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    }
+  }, [notification, setNotification]);
+
   return (
     <Formik
       initialValues={{ userName: "", password: "" }}
@@ -30,7 +42,10 @@ function LoginPage() {
             navigate("/controlPanel");
           })
           .catch((error) => {
-            console.log(error);
+            setNotification({
+              message: error.response.data.message,
+              type: "error",
+            });
           });
       }}
     >
@@ -115,6 +130,14 @@ function LoginPage() {
               </NavLink>
             </p>
           </div>
+
+          {notification && (
+            <NotificationMessage
+              message={notification.message}
+              type={notification.type}
+              onClose={() => setNotification(null)}
+            />
+          )}
         </div>
       )}
     </Formik>
