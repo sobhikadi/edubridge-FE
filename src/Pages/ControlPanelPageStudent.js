@@ -4,12 +4,25 @@ import { AuthContext } from "../Components/AuthContext";
 import { useNavigate } from "react-router-dom";
 import AuthenticationApi from "../APIs/AuthenticationApi";
 import { useContext } from "react";
+import NotificationContext from "../Components/NotificationContext";
+import NotificationMessage from "../Components/NotificationMessage";
+import StudentApi from "../APIs/StudentApi";
 
-function ControlPanelPageStudent() {
+function ControlPanelPageStudent({ userData }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { notification, setNotification } = useContext(NotificationContext);
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    if (notification) {
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    }
+  }, [notification, setNotification]);
 
   function openModal() {
     setIsOpen(true);
@@ -41,13 +54,45 @@ function ControlPanelPageStudent() {
     }
   };
 
+  const getStudentDetails = () => {
+    const claims = userData;
+    if (claims?.roles?.includes("STUDENT") && claims?.studentId) {
+      StudentApi.getStudent(claims.studentId)
+        .then((student) => {
+          setUserInfo(student);
+          setNotification({
+            message: `Welcome ${student.firstName} ${student.lastName}!`,
+            type: "success",
+          });
+        })
+        .catch((error) =>
+          setNotification({
+            message: error.response.data.message,
+            type: "error",
+          })
+        );
+    }
+  };
+
+  useEffect(() => {
+    getStudentDetails();
+  }, [userData]);
+
   const handelLogOut = () => {
     AuthenticationApi.logout(logout);
+
     navigate("/");
   };
 
   return (
     <>
+      {notification && (
+        <NotificationMessage
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <button
         type="button"
         className="inline-flex items-center p-2 mb-3 ml-3 text-sm text-slate-200 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-slate-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600"

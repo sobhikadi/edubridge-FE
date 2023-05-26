@@ -24,15 +24,10 @@ const AuthenticationApi = {
       navigator("login");
     }
 
-    axiosInstance
-      .post(logoutUrl, { refreshToken, subject })
-      .then(() => {
-        TokenManager.clear();
-        logout();
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
+    axiosInstance.post(logoutUrl, { refreshToken, subject }).then(() => {
+      TokenManager.clear();
+      logout();
+    });
   },
 };
 

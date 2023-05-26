@@ -1,48 +1,104 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import signUpImage from "../Assets/signupImage.png";
-import CountriesApi from "../APIs/CountriesApi";
+import InputFieldRegisterForm from "../Components/InputFieldRegisterForm";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import SelectCountryRegisterForm from "../Components/SelectCountryRegisterForm";
+import CreateAccountApi from "../APIs/CreateAccountApi";
+import NotificationContext from "../Components/NotificationContext";
+import NotificationMessage from "../Components/NotificationMessage";
 
 function SignUpPage() {
   const [selected, setSelected] = useState(true);
-  const [countries, setCountries] = useState([]);
 
-  const getAllCountries = () => {
-    CountriesApi.getCountries()
-      .then((result) => {
-        setCountries(result);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  const { notification, setNotification } = useContext(NotificationContext);
 
   useEffect(() => {
-    getAllCountries();
-  }, []);
+    if (notification) {
+      setTimeout(() => {
+        setNotification(null);
+      }, 5000);
+    }
+  }, [notification, setNotification]);
+
+  const initialValuesStudent = {
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    countryId: 1,
+  };
+  const initialValuesTeacher = {
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    street: "",
+    city: "",
+    zipCode: "",
+    countryId: 0,
+  };
+
+  const validationSchemaStudent = Yup.object({
+    email: Yup.string().email("Invalid email address").required("Required"),
+    password: Yup.string()
+      .min(8, "Password must be 8 characters or longer")
+      .required("Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Required"),
+    firstName: Yup.string().required("Required"),
+    lastName: Yup.string().required("Required"),
+    countryId: Yup.number().required("Required"),
+  });
+
+  const validationSchemaTeacher = Yup.object({
+    email: Yup.string().email("Invalid email address").required("Required"),
+    password: Yup.string()
+      .min(8, "Password must be 8 characters or longer")
+      .required("Required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password"), null], "Passwords must match")
+      .required("Required"),
+    firstName: Yup.string().required("Required"),
+    lastName: Yup.string().required("Required"),
+    street: Yup.string().required("Required"),
+    city: Yup.string().required("Required"),
+    zipCode: Yup.string().required("Required"),
+    countryId: Yup.number().required("Required"),
+  });
 
   const handleRegistrationTypeClick = () => {
-    console.log(countries);
     setSelected(!selected);
   };
 
   return (
-    <div class="lg:mt-4 lg:mb-4 relative">
+    <div className="lg:mt-4 lg:mb-4 relative">
+      {notification && (
+        <NotificationMessage
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <div
-        class="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-0 mr-auto mb-0 ml-auto max-w-7xl
+        className="flex flex-col items-center justify-between pt-0 pr-10 pb-0 pl-10 mt-0 mr-auto mb-0 ml-auto max-w-7xl
       xl:px-5 lg:flex-row"
       >
-        <div class="flex flex-col items-center w-full pt-5 pb-20  lg:pt-10 lg:pl-10 lg:pr-10 lg:flex-row">
-          <div class="w-full bg-cover relative max-w-md lg:max-w-2xl lg:w-8/12 lg:-ml-20 ">
-            <div class="flex flex-col items-center justify-center w-full h-full relative lg:pr-24">
-              <img className=" rounded-full" src={signUpImage} />
+        <div className="flex flex-col items-center w-full pt-5 pb-20  lg:pt-10 lg:pl-10 lg:pr-10 lg:flex-row">
+          <div className="w-full bg-cover relative max-w-md lg:max-w-2xl lg:w-8/12 lg:-ml-20 ">
+            <div className="flex flex-col items-center justify-center w-full h-full relative lg:pr-24">
+              <img className=" rounded-full" src={signUpImage} alt="" />
             </div>
           </div>
-          <div class=" w-full mt-20 mr-0 mb-0 ml-0 relative z-10 max-w-2xl lg:mt-0 lg:w-8/12">
+          <div className=" w-full mt-20 mr-0 mb-0 ml-0 relative z-10 max-w-2xl lg:mt-0 lg:w-8/12">
             <div
-              class="flex flex-col items-start justify-start pt-10 px-4 pb-10 lg:-mr-16  lg:px-10 bg-white shadow-2xl rounded-xl
+              className="flex flex-col items-start justify-start pt-10 px-4 pb-10 lg:-mr-16  lg:px-10 bg-white shadow-2xl rounded-xl
                     relative z-10"
             >
-              <p class="w-full text-indigo-600 text-4xl font-medium text-center leading-snug font-serif">
+              <p className="w-full text-indigo-600 text-4xl font-medium text-center leading-snug font-serif">
                 Sign up for an account
               </p>
               <div className="relative w-full mt-4 rounded-md border h-10 p-1 bg-gray-200">
@@ -71,223 +127,152 @@ function SignUpPage() {
 
               {selected ? (
                 //form to toggle student
-
-                <div class="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
-                  <div class="relative">
-                    <p
-                      class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                                            absolute"
-                    >
-                      Username/Email
-                    </p>
-                    <input
-                      placeholder="JohnDoe@email.com"
+                <Formik
+                  initialValues={initialValuesStudent}
+                  validationSchema={validationSchemaStudent}
+                  onSubmit={(values, { resetForm, setSubmitting }) => {
+                    CreateAccountApi.SignUpStudent(values)
+                      .then((res) => {
+                        resetForm();
+                        setSubmitting(false);
+                        setNotification({
+                          message: "Account created successfully",
+                          type: "success",
+                        });
+                      })
+                      .catch((err) => {
+                        console.log(err.response.data.message);
+                        setNotification({
+                          message: err.response.data.message,
+                          type: "error",
+                        });
+                      });
+                  }}
+                >
+                  <Form className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-4">
+                    <InputFieldRegisterForm
+                      label="Username/Email"
+                      name="email"
                       type="text"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-
-                  <div class="relative">
-                    <p
-                      class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                                            absolute"
-                    >
-                      Password
-                    </p>
-                    <input
-                      placeholder="Password"
+                    <InputFieldRegisterForm
+                      label="Password"
+                      name="password"
                       type="password"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-                  <div class="relative">
-                    <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                      First Name
-                    </p>
-                    <input
-                      placeholder="John"
+                    <InputFieldRegisterForm
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      type="password"
+                    />
+                    <InputFieldRegisterForm
+                      label="First Name"
+                      name="firstName"
                       type="text"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-                  <div class="relative">
-                    <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                      Last Name
-                    </p>
-                    <input
-                      placeholder="Doe"
+                    <InputFieldRegisterForm
+                      label="Last Name"
+                      name="lastName"
                       type="text"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-                  <div className="relative">
-                    <p className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                      select country
-                    </p>
-                    <select
-                      className="border placeholder-gray-400 focus:outline-none
-                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                            border-gray-300 rounded-md"
-                    >
-                      {countries.map((country) => {
-                        return (
-                          <option
-                            value={country.name}
-                          >{`[${country.code}] - ${country.name}`}</option>
-                        );
-                      })}
-                    </select>
-                  </div>
 
-                  <div class="relative">
-                    <a
-                      class="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500
+                    <SelectCountryRegisterForm
+                      label="Select Country"
+                      name="countryId"
+                    />
+
+                    <div className="relative">
+                      <button
+                        className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500
                                             rounded-lg transition duration-200 hover:bg-indigo-600 ease"
-                    >
-                      Submit
-                    </a>
-                  </div>
-                </div>
+                        type="submit"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </Form>
+                </Formik>
               ) : (
                 //form to toggle teacher
-                <div class="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-8">
-                  <div class="relative">
-                    <p
-                      class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                                            absolute"
-                    >
-                      Username/Email
-                    </p>
-                    <input
-                      placeholder="JohnDoe@email.com"
+                <Formik
+                  initialValues={initialValuesTeacher}
+                  validationSchema={validationSchemaTeacher}
+                  onSubmit={(values) => {
+                    console.log(values);
+                  }}
+                >
+                  <Form className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-4">
+                    <InputFieldRegisterForm
+                      label="Username/Email"
+                      name="email"
                       type="text"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-
-                  <div class="relative">
-                    <p
-                      class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600
-                                            absolute"
-                    >
-                      Password
-                    </p>
-                    <input
-                      placeholder="Password"
+                    <InputFieldRegisterForm
+                      label="Password"
+                      name="password"
                       type="password"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-                  <div class="relative">
-                    <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                      First Name
-                    </p>
-                    <input
-                      placeholder="John"
+                    <InputFieldRegisterForm
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      type="password"
+                    />
+                    <InputFieldRegisterForm
+                      name="firstName"
+                      label="First Name"
                       type="text"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-                  <div class="relative">
-                    <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                      Last Name
-                    </p>
-                    <input
-                      placeholder="Doe"
+                    <InputFieldRegisterForm
+                      label="Last Name"
+                      name="lastName"
                       type="text"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-                  <div class="relative">
-                    <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                      Street
-                    </p>
-                    <input
-                      placeholder="AmsterdamStreet 123"
+
+                    <InputFieldRegisterForm
+                      label="Street"
+                      name="street"
                       type="text"
-                      class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
                     />
-                  </div>
-                  <div class="relative w-full flex flex-wrap md:flex-nowrap gap-5">
-                    <div className=" w-full md:w-1/2">
-                      <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                        City
-                      </p>
-                      <input
-                        placeholder="Amsterdam"
+
+                    <div className="relative w-full flex flex-wrap md:flex-nowrap gap-5">
+                      <InputFieldRegisterForm
+                        label="City"
+                        name="city"
                         type="text"
-                        class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
+                        className="w-full md:w-1/2"
+                      />
+                      <InputFieldRegisterForm
+                        label="ZipCode"
+                        name="zipCode"
+                        type="text"
+                        className="w-full md:w-1/2"
                       />
                     </div>
-                    <div className="w-full md:w-1/2">
-                      <p class="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                        ZipCode
-                      </p>
-                      <input
-                        placeholder="1111AA"
-                        type="text"
-                        class="border placeholder-gray-400 focus:outline-none
-                                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                                            border-gray-300 rounded-md"
-                      />
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <p className="bg-white pt-0 pr-2 pb-0 pl-2 -mt-3 mr-0 mb-0 ml-2 font-medium text-gray-600 absolute">
-                      select country
-                    </p>
-                    <select
-                      className="border placeholder-gray-400 focus:outline-none
-                            focus:border-black w-full pt-4 pr-4 pb-4 pl-4 mt-2 mr-0 mb-0 ml-0 text-base block bg-white
-                            border-gray-300 rounded-md"
-                    >
-                      {countries.map((country) => {
-                        return (
-                          <option
-                            value={country.name}
-                          >{`[${country.code}] - ${country.name}`}</option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                  <div class="relative">
-                    <a
-                      class="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500
+
+                    <SelectCountryRegisterForm
+                      label="Select Country"
+                      name="countryId"
+                    />
+                    <div className="relative">
+                      <button
+                        className="w-full inline-block pt-4 pr-5 pb-4 pl-5 text-xl font-medium text-center text-white bg-indigo-500
                                             rounded-lg transition duration-200 hover:bg-indigo-600 ease"
-                    >
-                      Submit
-                    </a>
-                  </div>
-                </div>
+                        type="submit"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </Form>
+                </Formik>
               )}
             </div>
 
             <svg
               viewBox="0 0 91 91"
-              class="absolute top-0 left-0 z-0 w-32 h-32 -mt-[25px] -ml-[25px] text-yellow-300
+              className="absolute top-0 left-0 z-0 w-32 h-32 -mt-[25px] -ml-[25px] text-yellow-300
                     fill-current"
             >
-              <g stroke="none" strokewidth="1" fillRule="evenodd">
+              <g stroke="none" strokeWidth="1" fillRule="evenodd">
                 <g fillRule="nonzero">
                   <g>
                     <g>
@@ -375,12 +360,12 @@ function SignUpPage() {
               </g>
             </svg>
             <svg
-              viewbox="0 0 91 91"
-              class="absolute bottom-0 right-0 z-0 w-32 h-32 -mb-[60px] -mr-[60px] lg:-mr-[125px] text-indigo-500
+              viewBox="0 0 91 91"
+              className="absolute bottom-0 right-0 z-0 w-32 h-32 -mb-[60px] -mr-[60px] lg:-mr-[125px] text-indigo-500
                     fill-current"
             >
-              <g stroke="none" strokewidth="1" fillrule="evenodd">
-                <g fillrule="nonzero">
+              <g stroke="none" strokeWidth="1" fillRule="evenodd">
+                <g fillRule="nonzero">
                   <g>
                     <g>
                       <circle cx="3.261" cy="3.445" r="2.72" />
