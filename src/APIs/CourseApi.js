@@ -3,8 +3,15 @@ import axiosInstance from "./AxiosInstance";
 const apiUrl = "/courses";
 
 const CourseApi = {
-  getCourses: () => {
-    return axiosInstance.get(apiUrl).then((result) => result.data.courses);
+  getCourses: (searchValue) => {
+    const { searchTerm, selectedCategory } = searchValue;
+    const params = {
+      searchTerm: searchTerm,
+      categoryId: selectedCategory,
+    };
+    return axiosInstance
+      .get(apiUrl, { params: params })
+      .then((result) => result.data.courses);
   },
   createCourse: (data) => {
     const { courseTitle, courseDescription, courseProvider, file } = data;

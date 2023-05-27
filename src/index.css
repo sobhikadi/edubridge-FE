@@ -15,3 +15,109 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* create variable for the scale size negative and positive using css variables
+  * https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
+  */
+:root {
+  --scale-negative: -5%;
+  --scale-positive: 5%;
+  --scale-amount: 1;
+}
+
+
+
+
+/*
+ * View a PURE 100% Tailwind CSS version here:
+ * https://play.tailwindcss.com/Vg6H4j8Fux
+ */
+
+ .custom-background-menu {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.custom-background-menu > option {
+  background: #fff;
+  color: #000;
+}
+ .glow {
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  border-radius: 100%;
+}
+
+.glow-1 {
+  animation: glow1 4s linear infinite;
+}
+
+.glow-2 {
+  animation: glow2 4s linear infinite;
+  animation-delay: 100ms;
+}
+
+
+
+.glow-4 {
+  animation: glow4 4s linear infinite;
+  animation-delay: 200ms;
+}
+
+@keyframes glow1 {
+  0% {
+    transform: translate(var(--scale-positive), var(--scale-positive)) scale(var(--scale-amount));
+  }
+  25% {
+    transform: translate(var(--scale-negative) , var(--scale-positive)) scale(var(--scale-amount));
+  }
+  50% {
+    transform: translate(var(--scale-negative), var(--scale-negative)) scale(var(--scale-amount));
+  }
+  75% {
+    transform: translate(var(--scale-positive), var(--scale-negative)) scale(var(--scale-amount));
+  }
+  100% {
+    transform: translate(var(--scale-positive),var(--scale-positive)) scale(var(--scale-amount));
+  }
+}
+
+@keyframes glow2 {
+  0% {
+    transform: translate(var(--scale-negative), var(--scale-negative)) scale(var(--scale-amount));
+  }
+  25% {
+    transform: translate(var(--scale-positive), var(--scale-negative)) scale(var(--scale-amount));
+  }
+  50% {
+    transform: translate(var(--scale-positive), var(--scale-positive)) scale(var(--scale-amount));
+  }
+  75% {
+    transform: translate(var(--scale-negative), var(--scale-positive)) scale(var(--scale-amount));
+  }
+  100% {
+    transform: translate(var(--scale-negative), var(--scale-negative)) scale(var(--scale-amount));
+  }
+}
+
+
+
+@keyframes glow4 {
+  0% {
+    transform: translate(var(--scale-positive), var(--scale-negative)) scale(var(--scale-amount));
+  }
+  25% {
+    transform: translate(var(--scale-positive), var(--scale-positive)) scale(var(--scale-amount));
+  }
+  50% {
+    transform: translate(var(--scale-negative), var(--scale-positive)) scale(var(--scale-amount));
+  }
+  75% {
+    transform: translate(var(--scale-negative), var(--scale-negative)) scale(var(--scale-amount));
+  }
+  100% {
+    transform: translate(var(--scale-positive), var(--scale-negative)) scale(var(--scale-amount));
+  }
+}
