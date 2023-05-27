@@ -14,9 +14,34 @@ const CreateAccountApi = {
       lastName: lastName,
       countryId: countryId,
     };
-    console.log(signUpInfo);
-
     return axiosInstance.post(apiUrlStudent, signUpInfo).then((result) => {
+      return result.data;
+    });
+  },
+
+  SignUpTeacher: (data) => {
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      countryId,
+      street,
+      city,
+      zipCode,
+    } = data;
+
+    const signUpInfo = {
+      userName: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      countryId: countryId,
+      street: street,
+      city: city,
+      zipcode: zipCode,
+    };
+    return axiosInstance.post(apiUrlTeacher, signUpInfo).then((result) => {
       return result.data;
     });
   },

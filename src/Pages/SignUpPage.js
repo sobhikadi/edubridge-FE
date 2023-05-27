@@ -7,9 +7,11 @@ import SelectCountryRegisterForm from "../Components/SelectCountryRegisterForm";
 import CreateAccountApi from "../APIs/CreateAccountApi";
 import NotificationContext from "../Components/NotificationContext";
 import NotificationMessage from "../Components/NotificationMessage";
+import { useNavigate } from "react-router-dom";
 
 function SignUpPage() {
   const [selected, setSelected] = useState(true);
+  const navigate = useNavigate();
 
   const { notification, setNotification } = useContext(NotificationContext);
 
@@ -27,7 +29,7 @@ function SignUpPage() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    countryId: 1,
+    countryId: 0,
   };
   const initialValuesTeacher = {
     email: "",
@@ -42,32 +44,63 @@ function SignUpPage() {
   };
 
   const validationSchemaStudent = Yup.object({
-    email: Yup.string().email("Invalid email address").required("Required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(100, "Must be 100 characters or less"),
     password: Yup.string()
       .min(8, "Password must be 8 characters or longer")
+      .max(100, "Must be 100 characters or less")
       .required("Required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Required"),
-    firstName: Yup.string().required("Required"),
-    lastName: Yup.string().required("Required"),
-    countryId: Yup.number().required("Required"),
+    firstName: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be 50 characters or less"),
+    lastName: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be 50 characters or less"),
+    countryId: Yup.number().required("Required").min(1, "Required"),
   });
 
   const validationSchemaTeacher = Yup.object({
-    email: Yup.string().email("Invalid email address").required("Required"),
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(100, "Must be 100 characters or less"),
     password: Yup.string()
       .min(8, "Password must be 8 characters or longer")
+      .max(100, "Must be 100 characters or less")
       .required("Required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords must match")
       .required("Required"),
-    firstName: Yup.string().required("Required"),
-    lastName: Yup.string().required("Required"),
-    street: Yup.string().required("Required"),
-    city: Yup.string().required("Required"),
-    zipCode: Yup.string().required("Required"),
-    countryId: Yup.number().required("Required"),
+    firstName: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be 50 characters or less"),
+    lastName: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be 50 characters or less"),
+    street: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be 50 characters or less"),
+    city: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(35, "Must be 35 characters or less"),
+    zipCode: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(15, "Must be 15 characters or less"),
+    countryId: Yup.number().required("Required").min(1, "Required"),
   });
 
   const handleRegistrationTypeClick = () => {
@@ -136,12 +169,15 @@ function SignUpPage() {
                         resetForm();
                         setSubmitting(false);
                         setNotification({
-                          message: "Account created successfully",
+                          message:
+                            "Account created successfully, please login, you will be redirected automatically",
                           type: "success",
                         });
+                        setTimeout(() => {
+                          navigate("/login");
+                        }, 5000);
                       })
                       .catch((err) => {
-                        console.log(err.response.data.message);
                         setNotification({
                           message: err.response.data.message,
                           type: "error",
@@ -197,8 +233,26 @@ function SignUpPage() {
                 <Formik
                   initialValues={initialValuesTeacher}
                   validationSchema={validationSchemaTeacher}
-                  onSubmit={(values) => {
-                    console.log(values);
+                  onSubmit={(values, { resetForm, setSubmitting }) => {
+                    CreateAccountApi.SignUpTeacher(values)
+                      .then((res) => {
+                        resetForm();
+                        setSubmitting(false);
+                        setNotification({
+                          message:
+                            "Account created successfully, please login, you will be redirected automatically",
+                          type: "success",
+                        });
+                        setTimeout(() => {
+                          navigate("/login");
+                        }, 5000);
+                      })
+                      .catch((err) => {
+                        setNotification({
+                          message: err.response.data.message,
+                          type: "error",
+                        });
+                      });
                   }}
                 >
                   <Form className="w-full mt-6 mr-0 mb-0 ml-0 relative space-y-4">
