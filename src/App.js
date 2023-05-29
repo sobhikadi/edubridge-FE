@@ -3,8 +3,7 @@ import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 import HomePage from "./Pages/HomePage";
 import NavBar from "./Components/NavBar";
 import Footer from "./Components/Footer";
-import CoursesPage from "./Pages/CoursesPage";
-import CreateCourse from "./Pages/CreateCourse";
+import CoursesPagePublic from "./Pages/CoursesPagePublic";
 import ControlPanelPageAdmin from "./Pages/ControlPanelPageAdmin";
 import LoginPage from "./Pages/LoginPage";
 import { useContext, useState } from "react";
@@ -14,6 +13,7 @@ import SignUpPage from "./Pages/SignUpPage";
 import NotificationContext from "./Components/NotificationContext";
 import ControlPanelPageTeacher from "./Pages/ControlPanelPageTeacher";
 import ControlPanelPageStudentTeacher from "./Pages/ControlPanelPageStudentTeacher";
+import CoursePagePublic from "./Pages/CoursePagePublic";
 
 function App() {
   const state = useContext(AuthContext);
@@ -41,8 +41,8 @@ function App() {
           <NavBar />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/courses" element={<CoursesPage />} />
-            <Route path="/createCourse" element={<CreateCourse />} />
+            <Route path="/coursesPagePublic" element={<CoursesPagePublic />} />
+            <Route path="/coursePagePublic" element={<CoursePagePublic />} />
             <Route
               path="/controlPanel"
               element={

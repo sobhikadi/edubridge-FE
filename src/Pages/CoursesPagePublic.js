@@ -1,32 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
 import CourseApi from "../APIs/CourseApi";
 import CardSkeleton from "../Components/CardSkeleton";
 import NoResults from "../Components/NoResults";
 import CoursesSearchBar from "../Components/CoursesSearchBar";
+import { useNavigate } from "react-router-dom";
 
-function CoursesPage() {
+function CoursesPagePublic() {
   const [courses, setCourses] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [searchValue, setSearchValue] = useState({
     searchTerm: "",
     selectedCategory: -1,
   });
+  const navigate = useNavigate();
+
+  const handelCourseClick = (course) => {
+    navigate("/coursePagePublic", { state: { course: course } });
+  };
 
   const handleSearchValueChange = (searchValue) => {
     setSearchValue(searchValue);
   };
-
-  useEffect(() => {
-    CourseApi.getCourses(searchValue)
-      .then((response) => {
-        setCourses(response);
-        setIsLoaded(true);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, [searchValue]);
 
   const refreshCourses = () => {
     CourseApi.getCourses(searchValue)
@@ -43,6 +37,10 @@ function CoursesPage() {
     refreshCourses();
   }, []);
 
+  useEffect(() => {
+    refreshCourses();
+  }, [searchValue]);
+
   return (
     <div className="mx-auto max-w-2xl pt-5 pb-16 px-4 sm:pb-24 sm:pt-6 sm:px-6 lg:max-w-7xl lg:px-8">
       <div>
@@ -55,15 +53,6 @@ function CoursesPage() {
       <p className="text-slate-200 mt-3 font-light">
         {courses.length} Results on EduBridge
       </p>
-
-      {/* <div className="mt-2">
-        <NavLink
-          className={" text-slate-400 hover:text-sky-500"}
-          to={"/createCourse"}
-        >
-          Create courses
-        </NavLink>
-      </div> */}
 
       {isLoaded && courses.length === 0 && <NoResults />}
 
@@ -83,10 +72,13 @@ function CoursesPage() {
               <div className="mt-4 flex justify-between">
                 <div>
                   <h3 className="text-md text-slate-200">
-                    <NavLink to={"#"}>
+                    <span
+                      onClick={() => handelCourseClick(course)}
+                      className="cursor-pointer"
+                    >
                       <span aria-hidden="true" className="absolute inset-0" />
                       {course.title}
-                    </NavLink>
+                    </span>
                   </h3>
                   <p className="mt-1 text-sm text-gray-400">
                     {course.provider}
@@ -101,4 +93,4 @@ function CoursesPage() {
   );
 }
 
-export default CoursesPage;
+export default CoursesPagePublic;

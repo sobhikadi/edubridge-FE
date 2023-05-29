@@ -2,7 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 function HomePage() {
-  const navigation = [{ name: "courses", href: "/courses" }];
+  const navigation = [{ name: "courses", href: "/coursesPagePublic" }];
   return (
     <div className="relative isolate px-6 pt-14 lg:px-8">
       {/* This is the background SVG  */}

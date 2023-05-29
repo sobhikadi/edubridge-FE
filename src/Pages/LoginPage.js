@@ -13,6 +13,10 @@ function LoginPage() {
   const { notification, setNotification } = useContext(NotificationContext);
 
   useEffect(() => {
+    setNotification(null);
+  }, []);
+
+  useEffect(() => {
     if (notification) {
       setTimeout(() => {
         setNotification(null);

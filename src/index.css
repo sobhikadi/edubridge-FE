@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -22,6 +23,10 @@ code {
   --scale-negative: -5%;
   --scale-positive: 5%;
   --scale-amount: 1;
+}
+
+.customBackground {
+  background-color: #121c30;
 }
 
 

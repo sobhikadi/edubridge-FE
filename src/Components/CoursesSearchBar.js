@@ -36,7 +36,7 @@ function CoursesSearchBar(props) {
     if (e.target.value > 0) {
       setSelectedCategory(e.target.value);
     } else {
-      setSelectedCategory(null);
+      setSelectedCategory(-1);
     }
   };
 

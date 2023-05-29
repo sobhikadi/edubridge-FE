@@ -14,14 +14,14 @@ const CourseApi = {
       .then((result) => result.data.courses);
   },
   createCourse: (data) => {
-    const { courseTitle, courseDescription, courseProvider, file } = data;
-
+    const { title, description, provider, file, publishState, category } = data;
+    const state = publishState === "published" ? "PUBLISHED" : "PENDING";
     const courseInfo = {
-      title: courseTitle,
-      description: courseDescription,
-      provider: courseProvider,
-      categoryId: 4,
-      publishState: "PUBLISHED",
+      title: title,
+      description: description,
+      provider: provider,
+      publishState: state,
+      categoryId: category.id,
     };
 
     let formData = new FormData();

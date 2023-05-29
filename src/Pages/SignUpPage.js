@@ -37,6 +37,7 @@ function SignUpPage() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
+    publishName: "",
     street: "",
     city: "",
     zipCode: "",
@@ -85,6 +86,10 @@ function SignUpPage() {
       .min(2, "Must be at least 2 characters")
       .max(50, "Must be 50 characters or less"),
     lastName: Yup.string()
+      .required("Required")
+      .min(2, "Must be at least 2 characters")
+      .max(50, "Must be 50 characters or less"),
+    publishName: Yup.string()
       .required("Required")
       .min(2, "Must be at least 2 characters")
       .max(50, "Must be 50 characters or less"),
@@ -279,6 +284,12 @@ function SignUpPage() {
                     <InputFieldRegisterForm
                       label="Last Name"
                       name="lastName"
+                      type="text"
+                    />
+
+                    <InputFieldRegisterForm
+                      label="Publish Name"
+                      name="publishName"
                       type="text"
                     />
 

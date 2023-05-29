@@ -11,9 +11,9 @@ import { useContext } from "react";
 function NavBar() {
   const navigationMain = [{ name: "Home", href: "/" }];
   const navigation = [
-    { name: "Courses", href: "/courses" },
-    { name: "Schools And Partners", href: "#" },
-    { name: "About", href: "#" },
+    { name: "Courses", href: "/coursesPagePublic" },
+    { name: "Schools And Partners", href: "/" },
+    { name: "About", href: "/" },
   ];
   const { ...state } = useContext(AuthContext);
 
