@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Modal from "react-modal";
+
 import { AuthContext } from "../Components/AuthContext";
 import { useNavigate } from "react-router-dom";
 import AuthenticationApi from "../APIs/AuthenticationApi";
@@ -9,11 +9,12 @@ import NotificationContext from "../Components/NotificationContext";
 import NotificationMessage from "../Components/NotificationMessage";
 import ManageCoursesIcon from "../Assets/ManageCoursesIcon.svg";
 import { ReactSVG } from "react-svg";
-import ManageCoursesComponent from "../Components/ManageCoursesComponent";
+import ManageCourses from "../Components/ManageCourses";
 import AdminDashboard from "../Components/AdminDashboard";
 import ManageLessons from "../Components/ManageLessons";
 import ManageCategories from "../Components/ManageCategories";
 import ManageUsers from "../Components/ManageUsers";
+import ModalComponent from "../Components/ModalComponent";
 
 function ControlPanelPageAdmin({ userData }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -60,7 +61,7 @@ function ControlPanelPageAdmin({ userData }) {
     if (activeTab === "dashboard") {
       return <AdminDashboard />;
     } else if (activeTab === "manageCourses") {
-      return <ManageCoursesComponent publishName={userInfo.publishName} />;
+      return <ManageCourses publishName={userInfo.publishName} />;
     } else if (activeTab === "manageLessons") {
       return <ManageLessons />;
     } else if (activeTab === "manageCategories") {
@@ -81,10 +82,6 @@ function ControlPanelPageAdmin({ userData }) {
   function closeModal() {
     setIsOpen(false);
   }
-
-  useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);
 
   useEffect(() => {
     if (isSidebarOpen) {
@@ -285,7 +282,15 @@ function ControlPanelPageAdmin({ userData }) {
         </aside>
 
         {/* modal */}
-        <Modal
+        <ModalComponent
+          isOpen={modalIsOpen}
+          closeModal={closeModal}
+          title={"Logout Modal"}
+          description={"Are you sure you want to log out?"}
+          onConfirm={handelLogOut}
+        />
+
+        {/* <Modal
           isOpen={modalIsOpen}
           onRequestClose={closeModal}
           contentLabel="Logout Modal"
@@ -310,7 +315,7 @@ function ControlPanelPageAdmin({ userData }) {
               Confirm
             </button>
           </div>
-        </Modal>
+        </Modal> */}
         <div className={`px-4 w-full `}>
           <div className="p-4 border-2 border-dashed rounded-lg border-gray-700 pb-10">
             {toggleComponents()}

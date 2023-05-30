@@ -3,22 +3,39 @@ import React from "react";
 import CourseApi from "../APIs/CourseApi";
 import NotificationContext from "./NotificationContext";
 import { useContext } from "react";
-import NotificationMessage from "./NotificationMessage";
 import CategoryApi from "../APIs/CategoryApi";
 import noImage from "../Assets/noImage.png";
+import axios from "axios";
 
-function CreateCourse({ publishName, refreshLessons }) {
+function UpdateCourse({ courseInfo, onUpdateCourse }) {
   const [course, setCourse] = useState({
-    title: "",
-    provider: publishName,
-    category: null,
-    description: "",
-    publishState: "Select a state",
-    file: null,
+    id: courseInfo?.id,
+    title: courseInfo?.title,
+    provider: courseInfo?.provider,
+    category: courseInfo?.category,
+    description: courseInfo?.description,
+    publishState:
+      courseInfo?.publishState === "PUBLISHED" ? "published" : "pending",
+    file: courseInfo?.imageUrl,
   });
-  const [returnedCourseId, setReturnedCourseId] = useState(0);
+
   const { notification, setNotification } = useContext(NotificationContext);
   const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    if (courseInfo.imageUrl) {
+      axios
+        .get(courseInfo.imageUrl, {
+          responseType: "blob",
+        })
+        .then((response) => {
+          setCourse((prevCourse) => ({
+            ...prevCourse,
+            file: response.data,
+          }));
+        });
+    }
+  }, []);
 
   const getCategories = () => {
     CategoryApi.getCategories()
@@ -35,6 +52,7 @@ function CreateCourse({ publishName, refreshLessons }) {
 
   useEffect(() => {
     getCategories();
+    setNotification(null);
   }, []);
 
   useEffect(() => {
@@ -71,8 +89,16 @@ function CreateCourse({ publishName, refreshLessons }) {
 
   const loadImageToPreview = () => {
     if (course.file) {
-      return URL.createObjectURL(course.file);
+      const urlPattern = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/;
+      const isUrl = urlPattern.test(course.file);
+
+      if (isUrl) {
+        return course.file; // Return the URL directly if it's already a URL
+      } else {
+        return URL.createObjectURL(course.file); // Create a temporary URL if it's a file object
+      }
     }
+
     return noImage;
   };
 
@@ -80,11 +106,14 @@ function CreateCourse({ publishName, refreshLessons }) {
     loadImageToPreview();
   }, [course.file]);
 
-  const addCourse = (data) => {
-    CourseApi.createCourse(data)
-      .then((response) => {
-        setReturnedCourseId(response.data.courseId);
-        refreshLessons();
+  const updateCourse = (data) => {
+    CourseApi.updateCourse(data)
+      .then(() => {
+        setNotification({
+          message: `Course updated successfully.`,
+          type: "success",
+        });
+        onUpdateCourse();
       })
       .catch((error) => {
         setNotification({
@@ -94,35 +123,18 @@ function CreateCourse({ publishName, refreshLessons }) {
       });
   };
 
-  useEffect(() => {
-    if (returnedCourseId > 0) {
-      setNotification({
-        message: `Course created successfully with id ${returnedCourseId}`,
-        type: "success",
-      });
-    }
-  }, [returnedCourseId]);
-
   const submitForm = (e) => {
     e.preventDefault();
-    addCourse(course);
+    updateCourse(course);
   };
 
   return (
     <>
       <h2 className=" text-xl font-bold tracking-tight my-4 text-slate-200">
-        Create a course
+        {`Update Course "${courseInfo?.title}"`}
       </h2>
 
       <div className=" p-4 bg-gray-800 rounded-lg">
-        {notification && (
-          <NotificationMessage
-            message={notification.message}
-            type={notification.type}
-            onClose={() => setNotification(null)}
-          />
-        )}
-
         <form onSubmit={submitForm}>
           <div className=" md:flex w-full ">
             <div className="md:w-3/5 md:pr-10">
@@ -137,6 +149,7 @@ function CreateCourse({ publishName, refreshLessons }) {
                   <input
                     type="text"
                     id="course_title"
+                    defaultValue={course.title}
                     name="title"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Introduction to React"
@@ -178,12 +191,13 @@ function CreateCourse({ publishName, refreshLessons }) {
                   name="category"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   onChange={handleChange}
+                  value={course?.category.name || ""}
                   required
                 >
                   <option value="">Select a Category</option>
                   {categories.map((category) => {
                     return (
-                      <option key={category.id} value={`${category.name}`}>
+                      <option key={category.id} value={category.name}>
                         {category.name}
                       </option>
                     );
@@ -201,6 +215,7 @@ function CreateCourse({ publishName, refreshLessons }) {
                   id="description"
                   rows="4"
                   name="description"
+                  defaultValue={course.description}
                   className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Introduction to React and its features"
                   onChange={handleChange}
@@ -240,4 +255,4 @@ function CreateCourse({ publishName, refreshLessons }) {
   );
 }
 
-export default CreateCourse;
+export default UpdateCourse;
