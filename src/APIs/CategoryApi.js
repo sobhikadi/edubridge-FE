@@ -7,10 +7,13 @@ const CategoryApi = {
     return axiosInstance.get(apiUrl).then((result) => result.data.categories);
   },
   createCategory: (categoryName) => {
-    categoryName = "newCategory";
-    categoryName = categoryName.trim();
-
     return axiosInstance.post(apiUrl, categoryName);
+  },
+  deleteCategory: (categoryId) => {
+    return axiosInstance.delete(`${apiUrl}/${categoryId}`);
+  },
+  updateCategory: (id, name) => {
+    return axiosInstance.put(`${apiUrl}/${id}`, { name });
   },
 };
 

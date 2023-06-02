@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import React from "react";
 import Modal from "react-modal";
-import UpdateLesson from "./UpdateLesson";
+import UpdateCategory from "./UpdateCategory";
 
-function EditLessonsModal({ isOpen, closeModal, course, lesson, onConfirm }) {
+function EditCategoryModal({ isOpen, closeModal, category, onConfirm }) {
   const handleConfirm = () => {
     onConfirm();
     closeModal();
@@ -17,15 +17,14 @@ function EditLessonsModal({ isOpen, closeModal, course, lesson, onConfirm }) {
     <Modal
       isOpen={isOpen}
       onRequestClose={closeModal}
-      contentLabel={lesson?.name}
+      contentLabel={category?.name}
       shouldCloseOnOverlayClick={false}
       overlayClassName="fixed inset-0 bg-slate-600 opacity-100 overflow-y-auto"
       className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/5 bg-black rounded shadow-lg p-8 z-50"
     >
-      <UpdateLesson
-        lessonInfo={lesson}
-        courseInfo={course}
-        onUpdateLesson={handleConfirm}
+      <UpdateCategory
+        categoryInfo={category}
+        onUpdateCategory={handleConfirm}
       />
       <div className="flex justify-center">
         <button
@@ -39,4 +38,4 @@ function EditLessonsModal({ isOpen, closeModal, course, lesson, onConfirm }) {
   );
 }
 
-export default EditLessonsModal;
+export default EditCategoryModal;

@@ -61,7 +61,7 @@ function ControlPanelPageStudent({ userData }) {
         .then((student) => {
           setUserInfo(student);
           setNotification({
-            message: `Welcome ${student.firstName} ${student.lastName}!`,
+            message: `Welcome ${student.firstName}!`,
             type: "success",
           });
         })
