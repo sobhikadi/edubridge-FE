@@ -24,7 +24,7 @@ function ControlPanelPageAdmin({ userData }) {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const { notification, setNotification } = useContext(NotificationContext);
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
     if (notification) {
@@ -320,33 +320,6 @@ function ControlPanelPageAdmin({ userData }) {
           description={"Are you sure you want to log out?"}
           onConfirm={handelLogOut}
         />
-
-        {/* <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={closeModal}
-          contentLabel="Logout Modal"
-          shouldCloseOnOverlayClick={false}
-          overlayClassName="fixed inset-0 bg-slate-600 opacity-80"
-          className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black rounded shadow-lg p-8"
-        >
-          <h2 className="font-bold text-slate-200 text-2xl mb-4">
-            Are you sure you want to log out?
-          </h2>
-          <div className="flex justify-center">
-            <button
-              onClick={closeModal}
-              className="bg-red-500 hover:bg-red-700 text-slate-200 font-bold py-2 px-4 rounded mr-4"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handelLogOut}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Confirm
-            </button>
-          </div>
-        </Modal> */}
         <div className={`px-4 w-full `}>
           <div className="p-4 border-2 border-dashed rounded-lg border-gray-700 pb-10">
             {toggleComponents()}

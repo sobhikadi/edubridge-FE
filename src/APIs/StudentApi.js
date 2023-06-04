@@ -13,6 +13,9 @@ const StudentApi = {
       courseId: courseId,
     });
   },
+  getAllStudents: () => {
+    return axiosInstance.get(apiUrl).then((result) => result.data);
+  },
 };
 
 export default StudentApi;

@@ -5,6 +5,7 @@ import { useContext } from "react";
 import NotificationContext from "./NotificationContext";
 import NotificationMessage from "./NotificationMessage";
 import EditCourseModal from "./EditCourseModal";
+import ManageCourseSearchBar from "./ManageCourseSearchBar";
 
 const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
   const [hoverRowIndex, setHoverRowIndex] = useState(null);
@@ -18,6 +19,12 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [courseToDeleteOrEdit, setCourseToDeleteOrEdit] = useState(null);
   const { notification, setNotification } = useContext(NotificationContext);
+  const [searchValueForTable, setSearchValueForTable] = useState({
+    searchInput: "",
+    searchType: "",
+  });
+
+  const [coursesOnSearch, setCoursesOnSearch] = useState([]);
 
   const setDeleteOrEditCourse = (course) => {
     setCourseToDeleteOrEdit(course);
@@ -104,6 +111,48 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
       });
   };
 
+  const handelSearch = (searchInput, searchType) => {
+    setSearchValueForTable({ searchInput, searchType });
+  };
+
+  useEffect(() => {
+    const { searchInput, searchType } = searchValueForTable;
+
+    if (searchInput === "") {
+      setCoursesOnSearch([]);
+    } else if (searchType === "Title") {
+      setCoursesOnSearch(
+        courses.filter((course) =>
+          course.title.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    } else if (searchType === "Provider") {
+      setCoursesOnSearch(
+        courses.filter((course) =>
+          course.provider.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    } else if (searchType === "Category") {
+      setCoursesOnSearch(
+        courses.filter((course) =>
+          course.category.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    } else if (searchType === "PublishState") {
+      setCoursesOnSearch(
+        courses.filter((course) =>
+          course.publishState.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    } else if (searchType === "CreationDate") {
+      setCoursesOnSearch(
+        courses.filter((course) =>
+          course.creationDate.toLowerCase().includes(searchInput.toLowerCase())
+        )
+      );
+    }
+  }, [searchValueForTable, courses]);
+
   return (
     <>
       {notification && (
@@ -115,9 +164,13 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
       )}
 
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-8 ">
-        <h2 className="text-xl font-bold tracking-tight mb-4 text-slate-200">
-          Courses
-        </h2>
+        <div className="flex justify-between">
+          <h2 className="text-xl font-bold tracking-tight text-slate-200">
+            Courses
+          </h2>
+          <ManageCourseSearchBar handleChange={handelSearch} />
+        </div>
+
         <table className="w-full text-md text-left text-gray-400">
           <thead className="text-sm uppercase bg-gray-700 text-gray-400">
             <tr>
@@ -160,44 +213,83 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
                 <td className="px-6 py-4 text-center">empty</td>
               </tr>
             )}
-            {courses.map((course, index) => (
-              <tr
-                key={course.id}
-                className={`${
-                  index === hoverRowIndex
-                    ? "bg-gray-600"
-                    : index % 2 === 0
-                    ? "bg-gray-900"
-                    : "bg-gray-800"
-                } border-gray-700 border-b  `}
-                onMouseEnter={() => setHoverRowIndex(index)}
-                onMouseLeave={() => setHoverRowIndex(null)}
-              >
-                <td className="px-6 py-4">{course.id}</td>
-                <td className="px-6 py-4">{course.title}</td>
-                <td className="px-6 py-4">{course.provider}</td>
-                <td className="px-6 py-4">{course.category.name}</td>
-                <td className="px-6 py-4">{course.publishState}</td>
-                <td className="px-6 py-4">{course.creationDate}</td>
-                <td className="px-6 py-4 text-center ">
-                  <a
-                    href="#"
-                    className="font-medium text-blue-500 hover:underline"
-                    onClick={openEditModal}
+            {coursesOnSearch.length === 0
+              ? courses.map((course, index) => (
+                  <tr
+                    key={course.id}
+                    className={`${
+                      index === hoverRowIndex
+                        ? "bg-gray-600"
+                        : index % 2 === 0
+                        ? "bg-gray-900"
+                        : "bg-gray-800"
+                    } border-gray-700 border-b  `}
+                    onMouseEnter={() => setHoverRowIndex(index)}
+                    onMouseLeave={() => setHoverRowIndex(null)}
                   >
-                    Edit
-                  </a>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <button
-                    onClick={openModal}
-                    className="font-medium text-red-500 hover:underline"
+                    <td className="px-6 py-4">{course.id}</td>
+                    <td className="px-6 py-4">{course.title}</td>
+                    <td className="px-6 py-4">{course.provider}</td>
+                    <td className="px-6 py-4">{course.category.name}</td>
+                    <td className="px-6 py-4">{course.publishState}</td>
+                    <td className="px-6 py-4">{course.creationDate}</td>
+                    <td className="px-6 py-4 text-center ">
+                      <a
+                        href="#"
+                        className="font-medium text-blue-500 hover:underline"
+                        onClick={openEditModal}
+                      >
+                        Edit
+                      </a>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={openModal}
+                        className="font-medium text-red-500 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              : coursesOnSearch.map((course, index) => (
+                  <tr
+                    key={course.id}
+                    className={`${
+                      index === hoverRowIndex
+                        ? "bg-gray-600"
+                        : index % 2 === 0
+                        ? "bg-gray-900"
+                        : "bg-gray-800"
+                    } border-gray-700 border-b  `}
+                    onMouseEnter={() => setHoverRowIndex(index)}
+                    onMouseLeave={() => setHoverRowIndex(null)}
                   >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+                    <td className="px-6 py-4">{course.id}</td>
+                    <td className="px-6 py-4">{course.title}</td>
+                    <td className="px-6 py-4">{course.provider}</td>
+                    <td className="px-6 py-4">{course.category.name}</td>
+                    <td className="px-6 py-4">{course.publishState}</td>
+                    <td className="px-6 py-4">{course.creationDate}</td>
+                    <td className="px-6 py-4 text-center ">
+                      <a
+                        href="#"
+                        className="font-medium text-blue-500 hover:underline"
+                        onClick={openEditModal}
+                      >
+                        Edit
+                      </a>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={openModal}
+                        className="font-medium text-red-500 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
 
