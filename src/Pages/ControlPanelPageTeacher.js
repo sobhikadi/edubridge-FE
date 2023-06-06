@@ -11,7 +11,7 @@ import ManageCourses from "../Components/ManageCourses";
 import AdminDashboard from "../Components/AdminDashboard";
 import ManageLessons from "../Components/ManageLessons";
 import ModalComponent from "../Components/ModalComponent";
-import ChatWithTeacher from "../Components/ChatWithTeacher";
+import ChatComponent from "../Components/ChatComponent";
 import TeacherApi from "../APIs/TeachersApi";
 import ProfileComponent from "../Components/ProfileComponent";
 
@@ -64,9 +64,9 @@ function ControlPanelPageTeacher({ userData }) {
     } else if (activeTab === "manageLessons") {
       return <ManageLessons />;
     } else if (activeTab === "chatWithAdmin") {
-      return <ChatWithTeacher />;
+      return <ChatComponent />;
     } else if (activeTab === "chatWithStudent") {
-      return <ChatWithTeacher />;
+      return <ChatComponent />;
     } else if (activeTab === "profile") {
       return <ProfileComponent />;
     }

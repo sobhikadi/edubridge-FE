@@ -15,7 +15,7 @@ import ManageLessons from "../Components/ManageLessons";
 import ManageCategories from "../Components/ManageCategories";
 import ManageUsers from "../Components/ManageUsers";
 import ModalComponent from "../Components/ModalComponent";
-import ChatWithTeacher from "../Components/ChatWithTeacher";
+import ChatComponent from "../Components/ChatComponent";
 
 function ControlPanelPageAdmin({ userData }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -70,7 +70,7 @@ function ControlPanelPageAdmin({ userData }) {
     } else if (activeTab === "users") {
       return <ManageUsers />;
     } else if (activeTab === "chatWithTeacher") {
-      return <ChatWithTeacher />;
+      return <ChatComponent publishName={userInfo.publishName} />;
     }
   };
 
