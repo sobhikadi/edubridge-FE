@@ -70,7 +70,9 @@ function ControlPanelPageAdmin({ userData }) {
     } else if (activeTab === "users") {
       return <ManageUsers />;
     } else if (activeTab === "chatWithTeacher") {
-      return <ChatComponent publishName={userInfo.publishName} />;
+      return (
+        <ChatComponent publishName={userInfo.publishName} role={"Admin"} />
+      );
     }
   };
 
