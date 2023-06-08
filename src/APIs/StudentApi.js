@@ -2,6 +2,7 @@ import axiosInstance from "./AxiosInstance";
 
 const apiUrl = "/students";
 const enrollUrl = `${apiUrl}/enrollToCourse`;
+const addToFavouritesUrl = `${apiUrl}/addToFavourites`;
 
 const StudentApi = {
   getStudent: (id) => {
@@ -13,8 +14,26 @@ const StudentApi = {
       courseId: courseId,
     });
   },
+  addToFavourites: (studentId, courseId) => {
+    return axiosInstance.post(`${addToFavouritesUrl}`, {
+      studentId: studentId,
+      courseId: courseId,
+    });
+  },
   getAllStudents: () => {
     return axiosInstance.get(apiUrl).then((result) => result.data);
+  },
+  getStudentCourses: (id) => {
+    return StudentApi.getStudent(id)
+      .then((student) => {
+        return student;
+      })
+      .then((student) => {
+        return {
+          followedCourses: student.followedCourses,
+          favoriteCourses: student.favoriteCourses,
+        };
+      });
   },
 };
 

@@ -1,5 +1,13 @@
 {
-  "cSpell.words": ["formik", "headlessui", "heroicons", "rarr", "uuidv"],
+  "cSpell.words": [
+    "favourite",
+    "Favourites",
+    "formik",
+    "headlessui",
+    "heroicons",
+    "rarr",
+    "uuidv"
+  ],
   "cSpell.ignoreWords": [
     "Elit",
     "amet",

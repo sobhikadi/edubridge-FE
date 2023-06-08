@@ -6,7 +6,6 @@ function ChatMessagesList({
   selectedUser,
   userType,
 }) {
-  console.log(messagesReceived);
   return (
     <div className="grid grid-cols-12 gap-y-2">
       {messagesReceived.length > 0 &&

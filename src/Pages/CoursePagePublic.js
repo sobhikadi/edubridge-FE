@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import NotificationContext from "../Components/NotificationContext";
 import NotificationMessage from "../Components/NotificationMessage";
 import StudentApi from "../APIs/StudentApi";
+import favouritesIcon from "../Assets/favouriteIcon.png";
+import alreadyFavoriteIcon from "../Assets/favorite.png";
 
 function CoursePagePublic() {
   const location = useLocation();
@@ -18,6 +20,9 @@ function CoursePagePublic() {
   const tabs = ["About", "Lessons", "Providers", "Reviews"];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const state = useContext(AuthContext);
+  const [studentsCourses, setStudentsCourses] = useState([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(false);
 
   const { notification, setNotification } = useContext(NotificationContext);
 
@@ -28,6 +33,25 @@ function CoursePagePublic() {
       }, 5000);
     }
   }, [notification, setNotification]);
+
+  const getStudentsCourses = () => {
+    if (state?.isAuthenticated && state?.user?.roles.includes("STUDENT")) {
+      StudentApi.getStudentCourses(state?.user?.studentId)
+        .then((response) => {
+          setStudentsCourses(response);
+        })
+        .catch((error) => {
+          setNotification({
+            message: error.response.data.message,
+            type: "error",
+          });
+        });
+    }
+  };
+
+  useEffect(() => {
+    getStudentsCourses();
+  }, [course, state]);
 
   const handelEnrollToCourse = () => {
     if (state.isAuthenticated && state.user.roles.includes("STUDENT")) {
@@ -54,6 +78,31 @@ function CoursePagePublic() {
     }
   };
 
+  const handelAddToFavourites = () => {
+    if (state.isAuthenticated && state.user.roles.includes("STUDENT")) {
+      StudentApi.addToFavourites(state.user.studentId, course.id)
+        .then((response) => {
+          if (response.status === 200) {
+            setNotification({
+              message: "Added to favourites",
+              type: "success",
+            });
+          }
+        })
+        .catch((error) => {
+          setNotification({
+            message: error.response.data.message,
+            type: "error",
+          });
+        });
+    } else {
+      setNotification({
+        message: "You must be logged in as a student to add to favourites",
+        type: "error",
+      });
+    }
+  };
+
   const handleTabClick = (tab) => {
     setActiveTab(tab);
   };
@@ -69,6 +118,33 @@ function CoursePagePublic() {
       return <ReviewsCourse />;
     }
   };
+
+  const checkIfCourseIsFollowed = (studentsCourses, course) => {
+    const followedCourse = studentsCourses?.followedCourses?.find(
+      (followedCourse) => followedCourse.id === course.id
+    );
+    if (followedCourse) {
+      setIsFollowed(true);
+    } else {
+      setIsFollowed(false);
+    }
+  };
+
+  const checkIfCourseIsFavorite = (studentsCourses, course) => {
+    const favCourse = studentsCourses?.favoriteCourses?.find(
+      (favCourse) => favCourse.id === course.id
+    );
+    if (favCourse) {
+      setIsFavorite(true);
+    } else {
+      setIsFavorite(false);
+    }
+  };
+
+  useEffect(() => {
+    checkIfCourseIsFollowed(studentsCourses, course);
+    checkIfCourseIsFavorite(studentsCourses, course);
+  }, [studentsCourses, course]);
 
   return (
     <>
@@ -87,13 +163,29 @@ function CoursePagePublic() {
               {course.description} Lorem ipsum dolor sit amet consectetur
               adipisicing elit. Tempora, error.
             </p>
-            <div className="mt-10 ">
+            <div className="mt-10 flex gap-6 ">
               <button
                 className="rounded-md w-56 bg-indigo-600 px-3.5 py-2.5 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 onClick={handelEnrollToCourse}
               >
                 Enroll Now
               </button>
+
+              {isFavorite ? (
+                <button
+                  className="rounded-md w-14 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  // onClick={handelRemoveFromFavourites}
+                >
+                  <img src={alreadyFavoriteIcon} alt="" />
+                </button>
+              ) : (
+                <button
+                  className="rounded-md w-14 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  onClick={handelAddToFavourites}
+                >
+                  <img src={favouritesIcon} alt="" />
+                </button>
+              )}
             </div>
           </div>
           <img
