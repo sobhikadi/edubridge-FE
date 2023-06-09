@@ -1,23 +1,24 @@
-import { render } from "@testing-library/react";
 import React from "react";
 
 function ChatUserList({ users, selectedUser, onSelectUser, userType }) {
   const renderUserType = (user) => {
     if (userType === "Teacher") {
-      if (user.hasOwnProperty("publishName")) {
+      if (user?.role === "Admin") {
         return <span className="text-sm text-gray-400">Admin</span>;
-      } else {
+      } else if (user?.role === "Student") {
         return <span className="text-sm text-gray-400">Student</span>;
       }
     }
   };
 
+  console.log(users);
+
   return (
     <div>
-      {users.length > 0 ? (
+      {users?.length > 0 ? (
         users.map((user) => (
           <div
-            key={user.id}
+            key={user.publishName}
             className={`flex flex-row py-4 px-2 justify-center gap-2 lg:gap-0 items-center text-slate-200 cursor-pointer hover:bg-gray-600 ${
               selectedUser === user && "bg-blue-500 bg-opacity-60"
             }`}
@@ -32,11 +33,7 @@ function ChatUserList({ users, selectedUser, onSelectUser, userType }) {
             </div>
             <div className=" w-3/4 md:w-4/5 pl-2 lg:pl-0">
               <div className="text-lg font-bold">
-                {user.hasOwnProperty("publishName") ? (
-                  <span>{user?.publishName}</span>
-                ) : (
-                  <span>{`${user?.firstName} ${user?.lastName}`}</span>
-                )}
+                <span>{user?.publishName}</span>
               </div>
               {renderUserType(user)}
             </div>

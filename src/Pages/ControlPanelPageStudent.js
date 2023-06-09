@@ -8,7 +8,7 @@ import NotificationMessage from "../Components/NotificationMessage";
 import ManageCoursesIcon from "../Assets/ManageCoursesIcon.svg";
 import { ReactSVG } from "react-svg";
 import ModalComponent from "../Components/ModalComponent";
-import ChatComponent from "../Components/ChatComponent";
+import ChaComponentStudent from "../Components/ChatComponentStudent";
 import ProfileComponent from "../Components/ProfileComponent";
 import CoursesOfStudents from "../Components/CoursesOfStudents";
 import StudentApi from "../APIs/StudentApi";
@@ -70,9 +70,10 @@ function ControlPanelPageStudent({ userData }) {
       );
     } else if (activeTab === "chatWithTeacher") {
       return (
-        <ChatComponent
+        <ChaComponentStudent
           publishName={userInfo?.firstName + userInfo?.lastName}
           role={"Student"}
+          courses={userInfo?.followedCourses}
         />
       );
     } else if (activeTab === "profile") {

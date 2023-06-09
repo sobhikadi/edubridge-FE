@@ -3,7 +3,6 @@ import { Client } from "@stomp/stompjs";
 import { v4 as uuidv4 } from "uuid";
 import SendMessageInput from "./SendMessageInput";
 import chatBackground from "../Assets/chatBackground.svg";
-import TeacherApi from "../APIs/TeachersApi";
 import { useContext } from "react";
 import NotificationContext from "./NotificationContext";
 import ChatUserList from "./ChatUserList";
@@ -11,15 +10,13 @@ import AdminApi from "../APIs/AdminApi";
 import ChatMessagesList from "./ChatMessagesList";
 import StudentApi from "../APIs/StudentApi";
 
-function ChatComponent({ publishName, role }) {
+function ChatComponentTeacher({ publishName, courses }) {
   const [stompClient, setStompClient] = useState();
   const userNameSender = publishName;
-  const userType = role;
   const [messagesReceived, setMessagesReceived] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState();
+  const [userInfoReceivers, setUsersInfoReceivers] = useState([]);
+  const [selectedUserReceiver, setSelectedUserReceiver] = useState();
   const { notification, setNotification } = useContext(NotificationContext);
-
   useEffect(() => {
     if (notification) {
       setTimeout(() => {
@@ -33,49 +30,29 @@ function ChatComponent({ publishName, role }) {
   }, []);
 
   const onSelectRecipient = (user) => {
-    setSelectedUser(user);
+    setSelectedUserReceiver(user);
   };
 
   const getUsers = () => {
-    if (userType === "Admin") {
-      TeacherApi.getAllTeachers()
-        .then((response) => {
-          setUsers(response.teachers);
-          setSelectedUser(response?.teachers?.[0]);
-        })
-        .catch((error) => {
-          setNotification({
-            message: error.response.data.message,
-            type: "error",
-          });
+    AdminApi.getAllAdmins()
+      .then((response) => {
+        const usersInfo = [
+          ...response.admins.map((admin) => {
+            return {
+              role: "Admin",
+              publishName: admin.publishName,
+            };
+          }),
+        ];
+        setUsersInfoReceivers(usersInfo);
+        setSelectedUserReceiver(usersInfo?.[0]);
+      })
+      .catch((error) => {
+        setNotification({
+          message: error.response.data.message,
+          type: "error",
         });
-    }
-    if (userType === "Teacher") {
-      Promise.all([AdminApi.getAllAdmins(), StudentApi.getAllStudents()])
-        .then(([adminResponse, studentResponse]) => {
-          setUsers([...adminResponse.admins, ...studentResponse.students]);
-          setSelectedUser(adminResponse?.admins?.[0]);
-        })
-        .catch((error) => {
-          setNotification({
-            message: error.response.data.message,
-            type: "error",
-          });
-        });
-    }
-    if (userType === "Student") {
-      TeacherApi.getAllTeachers()
-        .then((response) => {
-          setUsers(response.teachers);
-          setSelectedUser(response?.teachers?.[0]);
-        })
-        .catch((error) => {
-          setNotification({
-            message: error.response.data.message,
-            type: "error",
-          });
-        });
-    }
+      });
   };
 
   useEffect(() => {
@@ -113,13 +90,11 @@ function ChatComponent({ publishName, role }) {
   // send the data using Stomp
   const sendMessage = (newMessage) => {
     if (!newMessage.text) return;
-    if (!selectedUser) return;
+    if (!selectedUserReceiver) return;
     const payload = {
       id: uuidv4(),
       from: userNameSender,
-      to: selectedUser.hasOwnProperty("publishName")
-        ? selectedUser.publishName
-        : `${selectedUser.firstName}${selectedUser.lastName}`,
+      to: selectedUserReceiver.publishName,
       text: newMessage.text,
     };
     if (payload.to) {
@@ -136,30 +111,78 @@ function ChatComponent({ publishName, role }) {
     setMessagesReceived((messagesReceived) => [...messagesReceived, message]);
   };
 
-  const renderTitle = () => {
-    if (userType === "Admin") {
-      return "Chat with Teachers";
-    } else if (userType === "Teacher") {
-      return "Chat with Admins and Students";
-    } else if (userType === "Student") {
-      return "Chat with Teachers";
+  const handelCourseChange = (e) => {
+    const courseId = e.target.value;
+    if (courseId) {
+      StudentApi.getStudentsByFollowedCourse(courseId)
+        .then((response) => {
+          console.log(response);
+          const usersInfo = response.students.map((student) => {
+            return {
+              role: "Student",
+              publishName: student.firstName + student.lastName,
+            };
+          });
+          setUsersInfoReceivers([...userInfoReceivers, ...usersInfo]);
+        })
+        .then(() => {
+          setSelectedUserReceiver(userInfoReceivers?.[0]);
+        })
+        .catch((error) => {
+          setNotification({
+            message: error.response.data.message,
+            type: "error",
+          });
+        });
     }
   };
 
   return (
     <div>
       <h1 className=" text-4xl font-bold tracking-tight mb-8 text-slate-200">
-        {renderTitle()}
+        Chat with Admins and Students
       </h1>
       <div className="flex  h-[75vh] rounded-xl w-full  ">
         {/* <!-- User List --> */}
         <div className="flex flex-col w-1/4 overflow-y-auto bg-gray-700 border-r-2 rounded-l-xl ">
+          {/* <!-- select course --> */}
+
+          <div className="py-3 px-2 ">
+            <label
+              htmlFor="course"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Select Course
+            </label>
+            <select
+              id="course"
+              name="course"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              onChange={(e) => handelCourseChange(e)}
+              required
+            >
+              <option value="">Select a Course</option>
+
+              {courses !== null &&
+                courses?.length > 0 &&
+                courses.map((course) => {
+                  return (
+                    <option key={course.id} value={course.id}>
+                      {course.title}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+
+          {/* <!-- end select course --> */}
+
           {/* <!-- search compt --> */}
           <div className=" py-4 px-2 border-b-2">
             <input
               type="text"
               placeholder="search chatting"
-              className="py-2 px-2 border-b-2 border-slate-200 rounded-2xl w-full"
+              className="py-2 px-2 border-b-2 border-slate-200 rounded-xl w-full"
             />
           </div>
           {/* <!-- end search compt --> */}
@@ -167,10 +190,10 @@ function ChatComponent({ publishName, role }) {
           {/* <!-- user list --> */}
 
           <ChatUserList
-            users={users}
-            selectedUser={selectedUser}
+            users={userInfoReceivers}
+            selectedUser={selectedUserReceiver}
             onSelectUser={onSelectRecipient}
-            userType={userType}
+            userType={"Teacher"}
           />
 
           {/* <!-- end user list --> */}
@@ -188,8 +211,8 @@ function ChatComponent({ publishName, role }) {
                 <ChatMessagesList
                   messagesReceived={messagesReceived}
                   userNameSender={userNameSender}
-                  selectedUser={selectedUser}
-                  userType={userType}
+                  selectedUser={selectedUserReceiver}
+                  userType={"Teacher"}
                 />
               </div>
             </div>
@@ -205,4 +228,4 @@ function ChatComponent({ publishName, role }) {
   );
 }
 
-export default ChatComponent;
+export default ChatComponentTeacher;

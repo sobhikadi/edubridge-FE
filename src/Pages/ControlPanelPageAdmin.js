@@ -15,7 +15,7 @@ import ManageLessons from "../Components/ManageLessons";
 import ManageCategories from "../Components/ManageCategories";
 import ManageUsers from "../Components/ManageUsers";
 import ModalComponent from "../Components/ModalComponent";
-import ChatComponent from "../Components/ChatComponent";
+import ChatComponentAdmin from "../Components/ChatComponentAdmin";
 
 function ControlPanelPageAdmin({ userData }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -62,17 +62,25 @@ function ControlPanelPageAdmin({ userData }) {
     if (activeTab === "dashboard") {
       return <AdminDashboard />;
     } else if (activeTab === "manageCourses") {
-      return <ManageCourses publishName={userInfo.publishName} />;
+      return (
+        <ManageCourses
+          publishName={userInfo?.publishName}
+          userRole={userData?.roles}
+        />
+      );
     } else if (activeTab === "manageLessons") {
-      return <ManageLessons />;
+      return (
+        <ManageLessons
+          publishName={userInfo?.publishName}
+          userRole={userData?.roles}
+        />
+      );
     } else if (activeTab === "manageCategories") {
       return <ManageCategories />;
     } else if (activeTab === "users") {
       return <ManageUsers />;
     } else if (activeTab === "chatWithTeacher") {
-      return (
-        <ChatComponent publishName={userInfo.publishName} role={"Admin"} />
-      );
+      return <ChatComponentAdmin publishName={userInfo.publishName} />;
     }
   };
 

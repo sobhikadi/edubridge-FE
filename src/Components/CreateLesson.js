@@ -5,7 +5,12 @@ import NotificationContext from "./NotificationContext";
 import { useContext } from "react";
 import LessonsApi from "../APIs/LessonsApi";
 
-function CreateLesson({ onSelectedCourseChanged, refreshLessons }) {
+function CreateLesson({
+  onSelectedCourseChanged,
+  refreshLessons,
+  publishName,
+  userRole,
+}) {
   const [lesson, setLesson] = useState({
     name: "",
     description: "",
@@ -15,7 +20,7 @@ function CreateLesson({ onSelectedCourseChanged, refreshLessons }) {
   const { notification, setNotification } = useContext(NotificationContext);
   const [courses, setCourses] = useState([]);
   const searchValue = {
-    searchTerm: "",
+    searchTerm: userRole.includes("ADMIN") ? "" : publishName,
     selectedCategory: -1,
   };
   const [selectedCourse, setSelectedCourse] = useState(null);

@@ -1,33 +1,11 @@
 import React from "react";
 
-function ChatMessagesList({
-  messagesReceived,
-  userNameSender,
-  selectedUser,
-  userType,
-}) {
+function ChatMessagesList({ messagesReceived, userNameSender, selectedUser }) {
   return (
     <div className="grid grid-cols-12 gap-y-2">
       {messagesReceived.length > 0 &&
         messagesReceived.map((message) => {
-          let messageSender;
-          if (
-            userType === "Teacher" &&
-            selectedUser.hasOwnProperty("publishName")
-          ) {
-            messageSender = selectedUser?.publishName;
-          } else if (
-            userType === "Admin" &&
-            selectedUser.hasOwnProperty("publishName")
-          ) {
-            messageSender = selectedUser?.publishName;
-          } else if (
-            userType === "Teacher" &&
-            !selectedUser.hasOwnProperty("publishName")
-          ) {
-            messageSender = `${selectedUser?.firstName}${selectedUser?.lastName}`;
-          }
-          if (message.from === messageSender) {
+          if (message.from === selectedUser?.publishName) {
             return (
               <div
                 className="col-start-1 col-end-8 p-3 rounded-lg"

@@ -35,6 +35,11 @@ const StudentApi = {
         };
       });
   },
+  getStudentsByFollowedCourse: (courseId) => {
+    return axiosInstance
+      .get(`${apiUrl}/getStudentsByCourse/${courseId}`)
+      .then((result) => result.data);
+  },
 };
 
 export default StudentApi;

@@ -7,12 +7,17 @@ import NotificationMessage from "./NotificationMessage";
 import EditCourseModal from "./EditCourseModal";
 import ManageCourseSearchBar from "./ManageCourseSearchBar";
 
-const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
+const CoursesTable = ({
+  refreshCourse,
+  setShouldRefreshFalse,
+  publishName,
+  userRole,
+}) => {
   const [hoverRowIndex, setHoverRowIndex] = useState(null);
   const [courses, setCourses] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const searchValue = {
-    searchTerm: "",
+    searchTerm: userRole.includes("ADMIN") ? "" : publishName,
     selectedCategory: -1,
   };
   const [modalIsOpen, setIsModalOpen] = useState(false);
@@ -85,7 +90,8 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
   }, []);
 
   const handleDelete = (id) => {
-    if (id === null) return;
+    if (!userRole.includes("ADMIN")) return;
+    if (id === null && id <= 0) return;
     CourseApi.deleteCourse(id)
       .then(() => {
         refreshCourses();
@@ -135,7 +141,7 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
     } else if (searchType === "Category") {
       setCoursesOnSearch(
         courses.filter((course) =>
-          course.category.toLowerCase().includes(searchInput.toLowerCase())
+          course.category.name.toLowerCase().includes(searchInput.toLowerCase())
         )
       );
     } else if (searchType === "PublishState") {
@@ -195,9 +201,11 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
               <th scope="col" className="px-6 py-3 text-center">
                 Edit Action
               </th>
-              <th scope="col" className="px-6 py-3 text-center">
-                Delete Action
-              </th>
+              {userRole.includes("ADMIN") && (
+                <th scope="col" className="px-6 py-3 text-center">
+                  Delete Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -210,7 +218,9 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
                 <td className="px-6 py-4">empty</td>
                 <td className="px-6 py-4">empty</td>
                 <td className="px-6 py-4 text-center ">empty</td>
-                <td className="px-6 py-4 text-center">empty</td>
+                {userRole.includes("ADMIN") && (
+                  <td className="px-6 py-4 text-center">empty</td>
+                )}
               </tr>
             )}
             {coursesOnSearch.length === 0
@@ -242,14 +252,16 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
                         Edit
                       </a>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={openModal}
-                        className="font-medium text-red-500 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    {userRole.includes("ADMIN") && (
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          onClick={openModal}
+                          className="font-medium text-red-500 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))
               : coursesOnSearch.map((course, index) => (
@@ -280,14 +292,16 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
                         Edit
                       </a>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={openModal}
-                        className="font-medium text-red-500 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    {userRole.includes("ADMIN") && (
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          onClick={openModal}
+                          className="font-medium text-red-500 hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
           </tbody>
@@ -298,15 +312,17 @@ const CoursesTable = ({ refreshCourse, setShouldRefreshFalse }) => {
           closeModal={closeEditModal}
           course={courseToDeleteOrEdit}
           onConfirm={refreshCourses}
+          userRole={userRole}
         />
-
-        <ModalComponent
-          isOpen={modalIsOpen}
-          closeModal={closeModal}
-          title={"Delete Course"}
-          description={`Are you sure you want to delete course "${courseToDeleteOrEdit?.title}"?`}
-          onConfirm={() => handleDelete(courseToDeleteOrEdit?.id)}
-        />
+        {userRole.includes("ADMIN") && (
+          <ModalComponent
+            isOpen={modalIsOpen}
+            closeModal={closeModal}
+            title={"Delete Course"}
+            description={`Are you sure you want to delete course "${courseToDeleteOrEdit?.title}"?`}
+            onConfirm={() => handleDelete(courseToDeleteOrEdit?.id)}
+          />
+        )}
       </div>
     </>
   );

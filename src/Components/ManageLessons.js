@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CreateLesson from "./CreateLesson";
 import LessonsTable from "./LessonsTable";
 
-function ManageLessons() {
+function ManageLessons({ userRole, publishName }) {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [LessonsShouldRefresh, setLessonsShouldRefresh] = useState(false);
 
@@ -28,11 +28,14 @@ function ManageLessons() {
       <CreateLesson
         onSelectedCourseChanged={getSelectedCourse}
         refreshLessons={setRefreshLessonsTrue}
+        publishName={publishName}
+        userRole={userRole}
       />
       <LessonsTable
         course={selectedCourse}
         refreshLesson={LessonsShouldRefresh}
         setShouldRefreshFalse={setRefreshLessonsFalse}
+        userRole={userRole}
       />
     </div>
   );

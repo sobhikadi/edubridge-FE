@@ -11,9 +11,10 @@ import ManageCourses from "../Components/ManageCourses";
 import AdminDashboard from "../Components/AdminDashboard";
 import ManageLessons from "../Components/ManageLessons";
 import ModalComponent from "../Components/ModalComponent";
-import ChatComponent from "../Components/ChatComponent";
+import ChatComponentTeacher from "../Components/ChatComponentTeacher";
 import TeacherApi from "../APIs/TeachersApi";
 import ProfileComponent from "../Components/ProfileComponent";
+import CourseApi from "../APIs/CourseApi";
 
 function ControlPanelPageTeacher({ userData }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -23,6 +24,7 @@ function ControlPanelPageTeacher({ userData }) {
   const [userInfo, setUserInfo] = useState(null);
   const { notification, setNotification } = useContext(NotificationContext);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [teachersCourses, setTeachersCourses] = useState([]);
 
   useEffect(() => {
     if (notification) {
@@ -34,8 +36,9 @@ function ControlPanelPageTeacher({ userData }) {
 
   const getTeacherDetails = () => {
     const claims = userData;
+
     if (claims?.roles?.includes("TEACHER") && claims?.teacherId) {
-      TeacherApi.getTeacher(claims.teacherId)
+      TeacherApi.getTeacher(claims?.teacherId)
         .then((teacher) => {
           setUserInfo(teacher);
           setNotification({
@@ -52,6 +55,31 @@ function ControlPanelPageTeacher({ userData }) {
     }
   };
 
+  useEffect(() => {
+    getTeacherDetails();
+  }, []);
+
+  const getTeachersCourses = () => {
+    if (!userInfo?.publishName) return;
+    CourseApi.getCourses({
+      searchTerm: userInfo?.publishName,
+      selectedCategory: null,
+    })
+      .then((response) => {
+        setTeachersCourses(response);
+      })
+      .catch((error) => {
+        setNotification({
+          message: error.response.data.message,
+          type: "error",
+        });
+      });
+  };
+
+  useEffect(() => {
+    getTeachersCourses();
+  }, [userInfo]);
+
   const handelActiveTab = (tab) => {
     setActiveTab(tab);
   };
@@ -60,21 +88,30 @@ function ControlPanelPageTeacher({ userData }) {
     if (activeTab === "dashboard") {
       return <AdminDashboard />;
     } else if (activeTab === "manageCourses") {
-      return <ManageCourses publishName={userInfo.publishName} />;
+      return (
+        <ManageCourses
+          publishName={userInfo?.publishName}
+          userRole={userData?.roles}
+        />
+      );
     } else if (activeTab === "manageLessons") {
-      return <ManageLessons />;
+      return (
+        <ManageLessons
+          publishName={userInfo?.publishName}
+          userRole={userData?.roles}
+        />
+      );
     } else if (activeTab === "chatWithAdmin") {
       return (
-        <ChatComponent publishName={userInfo?.publishName} role={"Teacher"} />
+        <ChatComponentTeacher
+          publishName={userInfo?.publishName}
+          courses={teachersCourses}
+        />
       );
     } else if (activeTab === "profile") {
       return <ProfileComponent />;
     }
   };
-
-  useEffect(() => {
-    getTeacherDetails();
-  }, [userData]);
 
   function openModal() {
     setIsOpen(true);

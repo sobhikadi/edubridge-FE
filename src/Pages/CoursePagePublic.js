@@ -164,12 +164,21 @@ function CoursePagePublic() {
               adipisicing elit. Tempora, error.
             </p>
             <div className="mt-10 flex gap-6 ">
-              <button
-                className="rounded-md w-56 bg-indigo-600 px-3.5 py-2.5 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                onClick={handelEnrollToCourse}
-              >
-                Enroll Now
-              </button>
+              {isFollowed ? (
+                <button
+                  className="rounded-md w-56 bg-indigo-600 px-3.5 py-2.5 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  // onClick={handelEnrollToCourse}
+                >
+                  Cancel Enrollment?
+                </button>
+              ) : (
+                <button
+                  className="rounded-md w-56 bg-indigo-600 px-3.5 py-2.5 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  onClick={handelEnrollToCourse}
+                >
+                  Enroll Now
+                </button>
+              )}
 
               {isFavorite ? (
                 <button

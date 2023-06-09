@@ -3,7 +3,7 @@ import React from "react";
 import Modal from "react-modal";
 import UpdateCourse from "./UpdateCourse";
 
-function EditCourseModal({ isOpen, closeModal, course, onConfirm }) {
+function EditCourseModal({ isOpen, closeModal, course, onConfirm, userRole }) {
   const handleConfirm = () => {
     onConfirm();
     closeModal();
@@ -22,7 +22,11 @@ function EditCourseModal({ isOpen, closeModal, course, onConfirm }) {
       overlayClassName="fixed inset-0 bg-slate-600 opacity-100 overflow-y-auto"
       className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/5 bg-black rounded shadow-lg p-8 z-50"
     >
-      <UpdateCourse courseInfo={course} onUpdateCourse={handleConfirm} />
+      <UpdateCourse
+        courseInfo={course}
+        onUpdateCourse={handleConfirm}
+        userRole={userRole}
+      />
       <div className="flex justify-center">
         <button
           onClick={closeModal}

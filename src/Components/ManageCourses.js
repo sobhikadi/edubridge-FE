@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CreateCourse from "./CreateCourse";
 import CoursesTable from "./CoursesTable";
 
-function ManageCourses({ publishName }) {
+function ManageCourses({ publishName, userRole }) {
   const [courseShouldRefresh, setCourseShouldRefresh] = useState(false);
 
   const setRefreshCoursesTrue = () => {
@@ -22,11 +22,14 @@ function ManageCourses({ publishName }) {
       </h1>
       <CreateCourse
         publishName={publishName}
+        userRole={userRole}
         refreshLessons={setRefreshCoursesTrue}
       />
       <CoursesTable
         refreshCourse={courseShouldRefresh}
         setShouldRefreshFalse={setRefreshCoursesFalse}
+        publishName={publishName}
+        userRole={userRole}
       />
     </div>
   );

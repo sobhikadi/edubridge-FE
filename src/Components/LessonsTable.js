@@ -5,7 +5,12 @@ import NotificationContext from "./NotificationContext";
 import EditLessonsModal from "./EditLessonModal";
 import LessonsApi from "../APIs/LessonsApi";
 
-const LessonsTable = ({ course, refreshLesson, setShouldRefreshFalse }) => {
+const LessonsTable = ({
+  course,
+  refreshLesson,
+  setShouldRefreshFalse,
+  userRole,
+}) => {
   const [hoverRowIndex, setHoverRowIndex] = useState(null);
   const [lessons, setLessons] = useState([]);
   const [modalIsOpen, setIsModalOpen] = useState(false);
@@ -118,9 +123,11 @@ const LessonsTable = ({ course, refreshLesson, setShouldRefreshFalse }) => {
               <th scope="col" className="px-6 py-3 text-center">
                 Edit Action
               </th>
-              <th scope="col" className="px-6 py-3 text-center">
-                Delete Action
-              </th>
+              {userRole?.includes("ADMIN") && (
+                <th scope="col" className="px-6 py-3 text-center">
+                  Delete Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -129,7 +136,9 @@ const LessonsTable = ({ course, refreshLesson, setShouldRefreshFalse }) => {
                 <td className="px-6 py-4">empty</td>
                 <td className="px-6 py-4">empty</td>
                 <td className="px-6 py-4 text-center ">empty</td>
-                <td className="px-6 py-4 text-center">empty</td>
+                {userRole?.includes("ADMIN") && (
+                  <td className="px-6 py-4 text-center">empty</td>
+                )}
               </tr>
             ) : (
               lessons?.map((lesson, index) => (
@@ -156,14 +165,16 @@ const LessonsTable = ({ course, refreshLesson, setShouldRefreshFalse }) => {
                       Edit
                     </a>
                   </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={openModal}
-                      className="font-medium text-red-500 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  {userRole?.includes("ADMIN") && (
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={openModal}
+                        className="font-medium text-red-500 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}
@@ -177,14 +188,15 @@ const LessonsTable = ({ course, refreshLesson, setShouldRefreshFalse }) => {
           lesson={lessonToDeleteOrEdit}
           onConfirm={refreshLessons}
         />
-
-        <ModalComponent
-          isOpen={modalIsOpen}
-          closeModal={closeModal}
-          title={"Delete Lesson"}
-          description={`Are you sure you want to delete lesson "${lessonToDeleteOrEdit?.name}"?`}
-          onConfirm={() => handleDelete(lessonToDeleteOrEdit?.id)}
-        />
+        {userRole?.includes("ADMIN") && (
+          <ModalComponent
+            isOpen={modalIsOpen}
+            closeModal={closeModal}
+            title={"Delete Lesson"}
+            description={`Are you sure you want to delete lesson "${lessonToDeleteOrEdit?.name}"?`}
+            onConfirm={() => handleDelete(lessonToDeleteOrEdit?.id)}
+          />
+        )}
       </div>
     </>
   );
