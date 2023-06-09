@@ -11,8 +11,6 @@ function ChatUserList({ users, selectedUser, onSelectUser, userType }) {
     }
   };
 
-  console.log(users);
-
   return (
     <div>
       {users?.length > 0 ? (

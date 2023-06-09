@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import { v4 as uuidv4 } from "uuid";
 import SendMessageInput from "./SendMessageInput";
@@ -11,12 +11,14 @@ import ChatMessagesList from "./ChatMessagesList";
 import StudentApi from "../APIs/StudentApi";
 
 function ChatComponentTeacher({ publishName, courses }) {
-  const [stompClient, setStompClient] = useState();
+  const stompClient = useRef();
   const userNameSender = publishName;
   const [messagesReceived, setMessagesReceived] = useState([]);
-  const [userInfoReceivers, setUsersInfoReceivers] = useState([]);
   const [selectedUserReceiver, setSelectedUserReceiver] = useState();
   const { notification, setNotification } = useContext(NotificationContext);
+  const [adminInfoReceivers, setAdminInfoReceivers] = useState([]);
+  const [studentInfoReceivers, setStudentInfoReceivers] = useState([]);
+
   useEffect(() => {
     if (notification) {
       setTimeout(() => {
@@ -44,7 +46,7 @@ function ChatComponentTeacher({ publishName, courses }) {
             };
           }),
         ];
-        setUsersInfoReceivers(usersInfo);
+        setAdminInfoReceivers(usersInfo);
         setSelectedUserReceiver(usersInfo?.[0]);
       })
       .catch((error) => {
@@ -62,29 +64,44 @@ function ChatComponentTeacher({ publishName, courses }) {
   useEffect(() => {
     if (userNameSender) {
       setupStompClient(userNameSender);
+      // Return a cleanup function
+      return () => {
+        if (stompClient.current) {
+          if (stompClient.current.subscription) {
+            stompClient.current.subscription.unsubscribe();
+          }
+          stompClient.current.deactivate();
+        }
+      };
     }
   }, []);
 
   const setupStompClient = (userName) => {
     // stomp client over websockets
-    const stompClient = new Client({
+    const stompClientInstance = new Client({
       brokerURL: "ws://localhost:8080/ws",
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     });
 
-    stompClient.onConnect = () => {
+    stompClientInstance.onConnect = () => {
       // subscribe to the backend "private" topic
-      stompClient.subscribe(`/user/${userName}/queue/inboxmessages`, (data) => {
-        onMessageReceived(data);
-      });
+      const subscription = stompClientInstance.subscribe(
+        `/user/${userName}/queue/inboxmessages`,
+        (data) => {
+          onMessageReceived(data);
+        }
+      );
+      // Save the subscription in the stompClient object
+      stompClientInstance.subscription = subscription;
     };
+
     // initiate client
-    stompClient.activate();
+    stompClientInstance.activate();
 
     // maintain the client for sending and receiving
-    setStompClient(stompClient);
+    stompClient.current = stompClientInstance;
   };
 
   // send the data using Stomp
@@ -97,11 +114,13 @@ function ChatComponentTeacher({ publishName, courses }) {
       to: selectedUserReceiver.publishName,
       text: newMessage.text,
     };
-    if (payload.to) {
-      stompClient.publish({
+    if (payload.to && stompClient.current) {
+      stompClient.current.publish({
         destination: `/user/${payload.to}/queue/inboxmessages`,
         body: JSON.stringify(payload),
       });
+      // Update the state to include the new message
+      setMessagesReceived((prevMessages) => [...prevMessages, payload]);
     }
   };
 
@@ -113,20 +132,25 @@ function ChatComponentTeacher({ publishName, courses }) {
 
   const handelCourseChange = (e) => {
     const courseId = e.target.value;
+    if (courseId <= 0) {
+      setStudentInfoReceivers([]);
+      return;
+    }
     if (courseId) {
       StudentApi.getStudentsByFollowedCourse(courseId)
         .then((response) => {
-          console.log(response);
           const usersInfo = response.students.map((student) => {
             return {
               role: "Student",
               publishName: student.firstName + student.lastName,
             };
           });
-          setUsersInfoReceivers([...userInfoReceivers, ...usersInfo]);
+          setStudentInfoReceivers(usersInfo);
         })
         .then(() => {
-          setSelectedUserReceiver(userInfoReceivers?.[0]);
+          setSelectedUserReceiver(
+            studentInfoReceivers?.[0] || adminInfoReceivers?.[0]
+          );
         })
         .catch((error) => {
           setNotification({
@@ -161,7 +185,7 @@ function ChatComponentTeacher({ publishName, courses }) {
               onChange={(e) => handelCourseChange(e)}
               required
             >
-              <option value="">Select a Course</option>
+              <option value={0}>Select a Course</option>
 
               {courses !== null &&
                 courses?.length > 0 &&
@@ -190,7 +214,7 @@ function ChatComponentTeacher({ publishName, courses }) {
           {/* <!-- user list --> */}
 
           <ChatUserList
-            users={userInfoReceivers}
+            users={[...adminInfoReceivers, ...studentInfoReceivers]}
             selectedUser={selectedUserReceiver}
             onSelectUser={onSelectRecipient}
             userType={"Teacher"}

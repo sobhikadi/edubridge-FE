@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import { v4 as uuidv4 } from "uuid";
 import SendMessageInput from "./SendMessageInput";
@@ -10,7 +10,7 @@ import ChatUserList from "./ChatUserList";
 import ChatMessagesList from "./ChatMessagesList";
 
 function ChatComponentAdmin({ publishName }) {
-  const [stompClient, setStompClient] = useState();
+  const stompClient = useRef();
   const userNameSender = publishName;
   const [messagesReceived, setMessagesReceived] = useState([]);
   const [userInfoReceivers, setUsersInfoReceivers] = useState([]);
@@ -60,29 +60,43 @@ function ChatComponentAdmin({ publishName }) {
   useEffect(() => {
     if (userNameSender) {
       setupStompClient(userNameSender);
+      // Return a cleanup function
+      return () => {
+        if (stompClient.current) {
+          if (stompClient.current.subscription) {
+            stompClient.current.subscription.unsubscribe();
+          }
+          stompClient.current.deactivate();
+        }
+      };
     }
   }, []);
 
   const setupStompClient = (userName) => {
     // stomp client over websockets
-    const stompClient = new Client({
+    const stompClientInstance = new Client({
       brokerURL: "ws://localhost:8080/ws",
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
     });
 
-    stompClient.onConnect = () => {
+    stompClientInstance.onConnect = () => {
       // subscribe to the backend "private" topic
-      stompClient.subscribe(`/user/${userName}/queue/inboxmessages`, (data) => {
-        onMessageReceived(data);
-      });
+      const subscription = stompClientInstance.subscribe(
+        `/user/${userName}/queue/inboxmessages`,
+        (data) => {
+          onMessageReceived(data);
+        }
+      );
+      // Save the subscription in the stompClient object
+      stompClientInstance.subscription = subscription;
     };
     // initiate client
-    stompClient.activate();
+    stompClientInstance.activate();
 
     // maintain the client for sending and receiving
-    setStompClient(stompClient);
+    stompClient.current = stompClientInstance;
   };
 
   // send the data using Stomp
@@ -95,11 +109,13 @@ function ChatComponentAdmin({ publishName }) {
       to: selectedUserReceiver.publishName,
       text: newMessage.text,
     };
-    if (payload.text) {
-      stompClient.publish({
+    if (payload.text && stompClient.current) {
+      stompClient.current.publish({
         destination: `/user/${payload.to}/queue/inboxmessages`,
         body: JSON.stringify(payload),
       });
+      // Update the state to include the new message
+      setMessagesReceived((prevMessages) => [...prevMessages, payload]);
     }
   };
 

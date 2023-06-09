@@ -1,14 +1,21 @@
 import React from "react";
 
 function ChatMessagesList({ messagesReceived, userNameSender, selectedUser }) {
+  const relevantMessages = messagesReceived.filter(
+    (message) =>
+      (message.from === selectedUser?.publishName &&
+        message.to === userNameSender) ||
+      (message.from === userNameSender &&
+        message.to === selectedUser?.publishName)
+  );
   return (
-    <div className="grid grid-cols-12 gap-y-2">
-      {messagesReceived.length > 0 &&
-        messagesReceived.map((message) => {
+    <div className="grid grid-cols-12 gap-y-2 py-2">
+      {relevantMessages.length > 0 &&
+        relevantMessages.map((message) => {
           if (message.from === selectedUser?.publishName) {
             return (
               <div
-                className="col-start-1 col-end-8 p-3 rounded-lg"
+                className="col-start-1 col-end-8 px-3 py-1 rounded-lg"
                 key={message.id}
               >
                 <div className="flex flex-row items-center">
@@ -24,7 +31,7 @@ function ChatMessagesList({ messagesReceived, userNameSender, selectedUser }) {
           } else if (message.from === userNameSender) {
             return (
               <div
-                className="col-start-6 col-end-13 p-3 rounded-lg"
+                className="col-start-6 col-end-13 px-3 py-1 rounded-lg"
                 key={message.id}
               >
                 <div className="flex items-center justify-start flex-row-reverse">
