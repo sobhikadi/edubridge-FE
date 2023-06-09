@@ -3,18 +3,14 @@ import { Client } from "@stomp/stompjs";
 import { v4 as uuidv4 } from "uuid";
 import SendMessageInput from "./SendMessageInput";
 import chatBackground from "../Assets/chatBackground.svg";
-import TeacherApi from "../APIs/TeachersApi";
 import { useContext } from "react";
 import NotificationContext from "./NotificationContext";
 import ChatUserList from "./ChatUserList";
-import AdminApi from "../APIs/AdminApi";
 import ChatMessagesList from "./ChatMessagesList";
-import StudentApi from "../APIs/StudentApi";
 
-function ChatComponentStudent({ publishName, role, courses }) {
+function ChatComponentStudent({ publishName, courses }) {
   const [stompClient, setStompClient] = useState();
   const userNameSender = publishName;
-  const userTypeSender = role;
   const [messagesReceived, setMessagesReceived] = useState([]);
   const [userInfoReceivers, setUsersInfoReceivers] = useState([]);
   const [selectedUserReceiver, setSelectedUserReceiver] = useState();
@@ -35,59 +31,6 @@ function ChatComponentStudent({ publishName, role, courses }) {
   const onSelectRecipient = (user) => {
     setSelectedUserReceiver(user);
   };
-
-  const getUsers = () => {
-    if (userTypeSender === "Admin") {
-      TeacherApi.getAllTeachers()
-        .then((response) => {
-          const usersInfo = response.teachers.map((teacher) => {
-            return {
-              role: "Teacher",
-              publishName: teacher.publishName,
-            };
-          });
-          setUsersInfoReceivers(usersInfo);
-          setSelectedUserReceiver(usersInfo?.[0]);
-        })
-        .catch((error) => {
-          setNotification({
-            message: error.response.data.message,
-            type: "error",
-          });
-        });
-    }
-    if (userTypeSender === "Teacher") {
-      Promise.all([AdminApi.getAllAdmins(), StudentApi.getAllStudents()])
-        .then(([adminResponse, studentResponse]) => {
-          const usersInfo = [
-            ...adminResponse.admins.map((admin) => {
-              return {
-                role: "Admin",
-                publishName: admin.publishName,
-              };
-            }),
-            ...studentResponse.students.map((student) => {
-              return {
-                role: "Student",
-                publishName: student.firstName + student.lastName,
-              };
-            }),
-          ];
-          setUsersInfoReceivers(usersInfo);
-          setSelectedUserReceiver(usersInfo?.[0]);
-        })
-        .catch((error) => {
-          setNotification({
-            message: error.response.data.message,
-            type: "error",
-          });
-        });
-    }
-  };
-
-  useEffect(() => {
-    getUsers();
-  }, []);
 
   useEffect(() => {
     if (userNameSender) {
@@ -124,10 +67,7 @@ function ChatComponentStudent({ publishName, role, courses }) {
     const payload = {
       id: uuidv4(),
       from: userNameSender,
-      to:
-        selectedUserReceiver.role === "Teacher" || "Admin"
-          ? selectedUserReceiver.publishName
-          : selectedUserReceiver.publishName,
+      to: selectedUserReceiver.publishName,
       text: newMessage.text,
     };
     if (payload.to) {
@@ -144,19 +84,13 @@ function ChatComponentStudent({ publishName, role, courses }) {
     setMessagesReceived((messagesReceived) => [...messagesReceived, message]);
   };
 
-  const renderTitle = () => {
-    if (userTypeSender === "Admin") {
-      return "Chat with Teachers";
-    } else if (userTypeSender === "Teacher") {
-      return "Chat with Admins and Students";
-    } else if (userTypeSender === "Student") {
-      return "Chat with Teachers";
-    }
-  };
-
   const handelCourseChange = (e) => {
     const coursePublisher = e.target.value;
-    if (coursePublisher && userTypeSender === "Student") {
+    if (coursePublisher === "Select a Course") {
+      setUsersInfoReceivers([]);
+      return;
+    }
+    if (coursePublisher) {
       setUsersInfoReceivers([
         {
           role: "Teacher",
@@ -170,41 +104,41 @@ function ChatComponentStudent({ publishName, role, courses }) {
   return (
     <div>
       <h1 className=" text-4xl font-bold tracking-tight mb-8 text-slate-200">
-        {renderTitle()}
+        Chat with Teachers
       </h1>
       <div className="flex  h-[75vh] rounded-xl w-full  ">
         {/* <!-- User List --> */}
         <div className="flex flex-col w-1/4 overflow-y-auto bg-gray-700 border-r-2 rounded-l-xl ">
           {/* <!-- select course --> */}
-          {userTypeSender === "Student" || userTypeSender === "Teacher" ? (
-            <div className="py-3 px-2 ">
-              <label
-                htmlFor="course"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Select Course
-              </label>
-              <select
-                id="course"
-                name="course"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                onChange={(e) => handelCourseChange(e)}
-                required
-              >
-                <option value="">Select a Course</option>
 
-                {courses !== null &&
-                  courses.length > 0 &&
-                  courses.map((course) => {
-                    return (
-                      <option key={course.id} value={course.provider}>
-                        {course.title}
-                      </option>
-                    );
-                  })}
-              </select>
-            </div>
-          ) : null}
+          <div className="py-3 px-2 ">
+            <label
+              htmlFor="course"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Select Course
+            </label>
+            <select
+              id="course"
+              name="course"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              onChange={(e) => handelCourseChange(e)}
+              required
+            >
+              <option value="Select a Course">Select a Course</option>
+
+              {courses !== null &&
+                courses.length > 0 &&
+                courses.map((course) => {
+                  return (
+                    <option key={course.id} value={course.provider}>
+                      {course.title}
+                    </option>
+                  );
+                })}
+            </select>
+          </div>
+
           {/* <!-- end select course --> */}
 
           {/* <!-- search compt --> */}
@@ -223,7 +157,7 @@ function ChatComponentStudent({ publishName, role, courses }) {
             users={userInfoReceivers}
             selectedUser={selectedUserReceiver}
             onSelectUser={onSelectRecipient}
-            userType={userTypeSender}
+            userType={"Student"}
           />
 
           {/* <!-- end user list --> */}
@@ -242,7 +176,7 @@ function ChatComponentStudent({ publishName, role, courses }) {
                   messagesReceived={messagesReceived}
                   userNameSender={userNameSender}
                   selectedUser={selectedUserReceiver}
-                  userType={userTypeSender}
+                  userType={"Student"}
                 />
               </div>
             </div>

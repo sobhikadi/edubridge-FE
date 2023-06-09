@@ -72,7 +72,6 @@ function ControlPanelPageStudent({ userData }) {
       return (
         <ChaComponentStudent
           publishName={userInfo?.firstName + userInfo?.lastName}
-          role={"Student"}
           courses={userInfo?.followedCourses}
         />
       );
