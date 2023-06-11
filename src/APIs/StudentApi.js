@@ -14,11 +14,19 @@ const StudentApi = {
       courseId: courseId,
     });
   },
+  disenrollFromCourse: (studentId, courseId) => {
+    return axiosInstance.delete(`${enrollUrl}/${courseId}/${studentId}`);
+  },
   addToFavourites: (studentId, courseId) => {
     return axiosInstance.post(`${addToFavouritesUrl}`, {
       studentId: studentId,
       courseId: courseId,
     });
+  },
+  removeFromFavourites: (studentId, courseId) => {
+    return axiosInstance.delete(
+      `${addToFavouritesUrl}/${courseId}/${studentId}`
+    );
   },
   getAllStudents: () => {
     return axiosInstance.get(apiUrl).then((result) => result.data);

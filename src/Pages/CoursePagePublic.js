@@ -49,10 +49,6 @@ function CoursePagePublic() {
     }
   };
 
-  useEffect(() => {
-    getStudentsCourses();
-  }, [course, state]);
-
   const handelEnrollToCourse = () => {
     if (state.isAuthenticated && state.user.roles.includes("STUDENT")) {
       StudentApi.enrollToCourse(state.user.studentId, course.id)
@@ -73,6 +69,32 @@ function CoursePagePublic() {
     } else {
       setNotification({
         message: "You must be logged in as a student to enroll to a course",
+        type: "error",
+      });
+    }
+  };
+
+  const handelDisenrollFromCourse = () => {
+    if (state.isAuthenticated && state.user.roles.includes("STUDENT")) {
+      StudentApi.disenrollFromCourse(state.user.studentId, course.id)
+        .then((response) => {
+          if (response.status === 200) {
+            setNotification({
+              message: "Disenrolled from course",
+              type: "success",
+            });
+          }
+        })
+        .catch((error) => {
+          setNotification({
+            message: error.response.data.message,
+            type: "error",
+          });
+        });
+    } else {
+      setNotification({
+        message:
+          "You must be logged in as a student to disenroll from a course",
         type: "error",
       });
     }
@@ -102,6 +124,42 @@ function CoursePagePublic() {
       });
     }
   };
+
+  const handelRemoveFromFavourites = () => {
+    if (state.isAuthenticated && state.user.roles.includes("STUDENT")) {
+      StudentApi.removeFromFavourites(state.user.studentId, course.id)
+        .then((response) => {
+          if (response.status === 200) {
+            setNotification({
+              message: "Removed from favourites",
+              type: "success",
+            });
+          }
+        })
+        .catch((error) => {
+          setNotification({
+            message: error.response.data.message,
+            type: "error",
+          });
+        });
+    } else {
+      setNotification({
+        message: "You must be logged in as a student to remove from favourites",
+        type: "error",
+      });
+    }
+  };
+
+  useEffect(() => {
+    getStudentsCourses();
+  }, [
+    course,
+    state,
+    handelEnrollToCourse,
+    handelDisenrollFromCourse,
+    handelAddToFavourites,
+    handelRemoveFromFavourites,
+  ]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -167,7 +225,7 @@ function CoursePagePublic() {
               {isFollowed ? (
                 <button
                   className="rounded-md w-56 bg-indigo-600 px-3.5 py-2.5 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  // onClick={handelEnrollToCourse}
+                  onClick={handelDisenrollFromCourse}
                 >
                   Cancel Enrollment?
                 </button>
@@ -183,7 +241,7 @@ function CoursePagePublic() {
               {isFavorite ? (
                 <button
                   className="rounded-md w-14 shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  // onClick={handelRemoveFromFavourites}
+                  onClick={handelRemoveFromFavourites}
                 >
                   <img src={alreadyFavoriteIcon} alt="" />
                 </button>
