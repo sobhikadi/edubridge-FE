@@ -16,6 +16,17 @@ function CoursesOfStudents({ courses, coursesType }) {
       <div className="mt-6 mx-2 md:mx-0  grid grid-cols-1 min-[440px]:grid-cols-2 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         {!courses || courses.length === 0 ? (
           <NoResults />
+        ) : coursesType === "Followed" ? (
+          courses.map((course) => {
+            return (
+              <div key={course.course.id}>
+                <CourseComponent
+                  course={course.course}
+                  handelCourseClick={handelCourseClick}
+                />
+              </div>
+            );
+          })
         ) : (
           courses.map((course) => {
             return (

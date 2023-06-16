@@ -20,7 +20,7 @@ function ChatMessagesList({ messagesReceived, userNameSender, selectedUser }) {
               >
                 <div className="flex flex-row items-center">
                   <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-                    A
+                    {selectedUser?.publishName[0]}
                   </div>
                   <div className="relative ml-3 text-sm whitespace-normal break-words bg-white py-2 px-4 shadow rounded-xl">
                     <div>{message.text}</div>
@@ -36,7 +36,7 @@ function ChatMessagesList({ messagesReceived, userNameSender, selectedUser }) {
               >
                 <div className="flex items-center justify-start flex-row-reverse">
                   <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
-                    A
+                    {userNameSender[0]}
                   </div>
                   <div className="relative mr-3 text-sm whitespace-normal break-words bg-indigo-100 py-2 px-4 shadow rounded-xl">
                     <div>{message.text}</div>

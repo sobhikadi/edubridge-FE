@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import CourseTabsComponent from "../Components/CourseTabsComponent";
 import AboutCourse from "../Components/AboutCourse";
@@ -49,6 +49,10 @@ function CoursePagePublic() {
     }
   };
 
+  useEffect(() => {
+    getStudentsCourses();
+  }, [state.isAuthenticated, course]);
+
   const handelEnrollToCourse = () => {
     if (state.isAuthenticated && state.user.roles.includes("STUDENT")) {
       StudentApi.enrollToCourse(state.user.studentId, course.id)
@@ -59,6 +63,7 @@ function CoursePagePublic() {
               type: "success",
             });
           }
+          getStudentsCourses();
         })
         .catch((error) => {
           setNotification({
@@ -84,6 +89,7 @@ function CoursePagePublic() {
               type: "success",
             });
           }
+          getStudentsCourses();
         })
         .catch((error) => {
           setNotification({
@@ -110,6 +116,7 @@ function CoursePagePublic() {
               type: "success",
             });
           }
+          getStudentsCourses();
         })
         .catch((error) => {
           setNotification({
@@ -135,6 +142,7 @@ function CoursePagePublic() {
               type: "success",
             });
           }
+          getStudentsCourses();
         })
         .catch((error) => {
           setNotification({
@@ -149,17 +157,6 @@ function CoursePagePublic() {
       });
     }
   };
-
-  useEffect(() => {
-    getStudentsCourses();
-  }, [
-    course,
-    state,
-    handelEnrollToCourse,
-    handelDisenrollFromCourse,
-    handelAddToFavourites,
-    handelRemoveFromFavourites,
-  ]);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -179,7 +176,7 @@ function CoursePagePublic() {
 
   const checkIfCourseIsFollowed = (studentsCourses, course) => {
     const followedCourse = studentsCourses?.followedCourses?.find(
-      (followedCourse) => followedCourse.id === course.id
+      (followedCourse) => followedCourse.course.id === course.id
     );
     if (followedCourse) {
       setIsFollowed(true);

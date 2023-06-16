@@ -15,7 +15,7 @@ function UpdateCourse({ courseInfo, onUpdateCourse, userRole }) {
     category: courseInfo?.category,
     description: courseInfo?.description,
     publishState:
-      courseInfo?.publishState === "PUBLISHED" ? "published" : "pending",
+      courseInfo?.publishState === "PUBLISHED" ? "Published" : "Pending",
     file: courseInfo?.imageUrl,
   });
 
@@ -175,8 +175,8 @@ function UpdateCourse({ courseInfo, onUpdateCourse, userRole }) {
                     required
                   >
                     <option value="">Select a State</option>
-                    <option value="published">Publish</option>
-                    <option value="pending">Pending</option>
+                    <option value="Published">Publish</option>
+                    <option value="Pending">Pending</option>
                   </select>
                 </div>
               )}

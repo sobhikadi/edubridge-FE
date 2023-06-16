@@ -149,8 +149,11 @@ function ChatComponentStudent({ publishName, courses }) {
                 courses.length > 0 &&
                 courses.map((course) => {
                   return (
-                    <option key={course.id} value={course.provider}>
-                      {course.title}
+                    <option
+                      key={course.course.id}
+                      value={course.course.provider}
+                    >
+                      {course.course.title}
                     </option>
                   );
                 })}

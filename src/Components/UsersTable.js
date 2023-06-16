@@ -39,6 +39,7 @@ const UsersTable = () => {
   const refreshTeachers = () => {
     TeacherApi.getAllTeachers()
       .then((response) => {
+        console.log(response);
         setUsers(response.teachers);
       })
       .catch((error) => {
@@ -68,6 +69,7 @@ const UsersTable = () => {
     } else {
       setUsers([]);
     }
+    console.log(users);
   }, [selectedRole]);
 
   return (

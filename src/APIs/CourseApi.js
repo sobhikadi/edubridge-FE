@@ -37,7 +37,7 @@ const CourseApi = {
   updateCourse: (data) => {
     const { id, title, description, provider, file, publishState, category } =
       data;
-    const state = publishState === "published" ? "PUBLISHED" : "PENDING";
+    const state = publishState === "Published" ? "PUBLISHED" : "PENDING";
     const courseInfo = {
       title: title,
       description: description,

@@ -148,7 +148,7 @@ function ControlPanelPageStudent({ userData }) {
       <div className="flex min-h-screen">
         <aside
           className={`w-64 ${isSidebarOpen === true ? "block" : "hidden"} ${
-            isSidebarOpen ? "fixed w-full h-[100rem] z-50 " : "md:relative"
+            isSidebarOpen ? "fixed w-full h-[100rem] z-40 " : "md:relative"
           } transition-all duration-300 ease-in-out lg:block`}
         >
           <div className=" h-2/3 px-3 py-4 rounded-md overflow-y-auto bg-gray-50 dark:bg-gray-800">
@@ -252,7 +252,10 @@ function ControlPanelPageStudent({ userData }) {
                 <a
                   href="#"
                   className="flex items-center p-2  rounded-lg text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={openModal}
+                  onClick={() => {
+                    openModal();
+                    closeSidebar();
+                  }}
                 >
                   <svg
                     aria-hidden="true"
