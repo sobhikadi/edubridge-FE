@@ -34,7 +34,10 @@ function HomePage() {
       {/* This is the main content */}
       <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
         <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-200 sm:text-6xl">
+          <h1
+            className="text-4xl font-bold text-slate-200 sm:text-6xl"
+            // style={{ lineHeight: "4.5rem" }}
+          >
             EduBridge together for a better future
           </h1>
           <p className="mt-6 text-lg leading-8 text-slate-400">

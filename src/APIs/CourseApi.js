@@ -60,6 +60,12 @@ const CourseApi = {
   deleteCourse: (id) => {
     return axiosInstance.delete(`${apiUrl}/${id}`);
   },
+  getCoursesStats: (filterData) => {
+    console.log(filterData);
+    return axiosInstance
+      .get(`${apiUrl}/stats`, { params: filterData })
+      .then((result) => result.data);
+  },
 };
 
 export default CourseApi;

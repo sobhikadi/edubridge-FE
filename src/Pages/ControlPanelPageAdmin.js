@@ -60,7 +60,12 @@ function ControlPanelPageAdmin({ userData }) {
 
   const toggleComponents = () => {
     if (activeTab === "dashboard") {
-      return <AdminDashboard />;
+      return (
+        <AdminDashboard
+          userRole={userData?.roles}
+          publishName={userInfo?.publishName}
+        />
+      );
     } else if (activeTab === "manageCourses") {
       return (
         <ManageCourses
@@ -300,7 +305,10 @@ function ControlPanelPageAdmin({ userData }) {
                 <a
                   href="#"
                   className="flex items-center p-2  rounded-lg text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={openModal}
+                  onClick={() => {
+                    closeSidebar();
+                    openModal();
+                  }}
                 >
                   <svg
                     aria-hidden="true"

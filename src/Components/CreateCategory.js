@@ -66,7 +66,7 @@ function CreateCategory({ refreshCategories }) {
   return (
     <>
       <h2 className=" text-xl font-bold tracking-tight my-4 text-slate-200">
-        Create a course
+        Create a Category
       </h2>
 
       <div className=" p-4 bg-gray-800 rounded-lg">

@@ -71,6 +71,11 @@ function CoursesSearchBar(props) {
               className="rounded-full flex-1 px-2 sm:px-6 py-4 text-indigo-900 focus:outline-none"
               value={searchTerm}
               onChange={handleSearchTermChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
             />
             <button
               type="submit"

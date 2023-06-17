@@ -18,7 +18,7 @@ function ModalComponent({ isOpen, closeModal, title, description, onConfirm }) {
       onRequestClose={closeModal}
       contentLabel={title}
       shouldCloseOnOverlayClick={false}
-      overlayClassName="fixed inset-0 bg-slate-600 opacity-80"
+      overlayClassName="fixed inset-0 bg-slate-600"
       className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black rounded shadow-lg p-8 z-50"
     >
       <h2 className="font-bold text-slate-200 text-2xl mb-4">{description}</h2>

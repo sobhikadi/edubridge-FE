@@ -29,6 +29,10 @@ code {
   background-color: #121c30;
 }
 
+.group:hover .group-hover\:block {
+	display: block;
+}
+
 
 
 
