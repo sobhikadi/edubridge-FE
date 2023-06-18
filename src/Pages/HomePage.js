@@ -32,7 +32,7 @@ function HomePage() {
         </svg>
       </div>
       {/* This is the main content */}
-      <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+      <div className="mx-auto max-w-3xl py-32 sm:py-48 lg:py-56">
         <div className="text-center">
           <h1
             className="text-4xl font-bold text-slate-200 sm:text-6xl"
@@ -40,10 +40,14 @@ function HomePage() {
           >
             EduBridge together for a better future
           </h1>
-          <p className="mt-6 text-lg leading-8 text-slate-400">
-            Anim autre id magna aliquot ad ad non desert sunn. Qui inure qui
-            lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat
-            fugiat aliquot.
+          <p className="mt-6 text-lg leading-7 text-slate-400">
+            Discover EduBridge, an inclusive platform that brings education to
+            everyone. With passionate teachers and enthusiastic students from
+            around the world, EduBridge offers a wide variety of subjects to
+            explore. Through interactive learning and a supportive community,
+            we're bridging the gap between education and those in need. Join us
+            at EduBridge and embark on a transformative journey of knowledge and
+            empowerment.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <NavLink

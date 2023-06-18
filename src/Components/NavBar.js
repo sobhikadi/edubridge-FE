@@ -13,7 +13,7 @@ function NavBar() {
   const navigation = [
     { name: "Courses", href: "/coursesPagePublic" },
     { name: "Schools And Partners", href: "/" },
-    { name: "About", href: "/" },
+    { name: "About", href: "/about" },
   ];
   const { ...state } = useContext(AuthContext);
 

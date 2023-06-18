@@ -13,8 +13,8 @@ import ManageLessons from "../Components/ManageLessons";
 import ModalComponent from "../Components/ModalComponent";
 import ChatComponentTeacher from "../Components/ChatComponentTeacher";
 import TeacherApi from "../APIs/TeachersApi";
-import ProfileComponent from "../Components/ProfileComponent";
 import CourseApi from "../APIs/CourseApi";
+import ProfileComponentTeacher from "../Components/ProfileComponentTeacher";
 
 function ControlPanelPageTeacher({ userData }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -109,7 +109,9 @@ function ControlPanelPageTeacher({ userData }) {
         />
       );
     } else if (activeTab === "profile") {
-      return <ProfileComponent />;
+      return (
+        <ProfileComponentTeacher userInfo={userInfo} userData={userData} />
+      );
     }
   };
 

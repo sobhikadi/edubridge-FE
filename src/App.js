@@ -14,6 +14,7 @@ import NotificationContext from "./Components/NotificationContext";
 import ControlPanelPageTeacher from "./Pages/ControlPanelPageTeacher";
 import ControlPanelPageStudentTeacher from "./Pages/ControlPanelPageStudentTeacher";
 import CoursePagePublic from "./Pages/CoursePagePublic";
+import AboutPage from "./Pages/AboutPage";
 
 function App() {
   const state = useContext(AuthContext);
@@ -64,6 +65,7 @@ function App() {
               }
             />
             <Route path="/signUp" element={<SignUpPage />} />
+            <Route path="/about" element={<AboutPage />} />
           </Routes>
           <Footer />
         </NotificationContext.Provider>

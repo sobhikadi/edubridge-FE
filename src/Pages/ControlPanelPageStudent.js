@@ -9,7 +9,7 @@ import ManageCoursesIcon from "../Assets/ManageCoursesIcon.svg";
 import { ReactSVG } from "react-svg";
 import ModalComponent from "../Components/ModalComponent";
 import ChaComponentStudent from "../Components/ChatComponentStudent";
-import ProfileComponent from "../Components/ProfileComponent";
+import ProfileComponentStudent from "../Components/ProfileComponentStudent";
 import CoursesOfStudents from "../Components/CoursesOfStudents";
 import StudentApi from "../APIs/StudentApi";
 
@@ -76,7 +76,9 @@ function ControlPanelPageStudent({ userData }) {
         />
       );
     } else if (activeTab === "profile") {
-      return <ProfileComponent />;
+      return (
+        <ProfileComponentStudent userInfo={userInfo} userData={userData} />
+      );
     }
   };
 
