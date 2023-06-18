@@ -195,26 +195,31 @@ function SignUpPage() {
                       label="Username/Email"
                       name="email"
                       type="text"
+                      placeholder="johndoe@email.com"
                     />
                     <InputFieldRegisterForm
                       label="Password"
                       name="password"
                       type="password"
+                      placeholder="Password"
                     />
                     <InputFieldRegisterForm
                       name="confirmPassword"
                       label="Confirm Password"
                       type="password"
+                      placeholder="Confirm Password"
                     />
                     <InputFieldRegisterForm
                       label="First Name"
                       name="firstName"
                       type="text"
+                      placeholder="John"
                     />
                     <InputFieldRegisterForm
                       label="Last Name"
                       name="lastName"
                       type="text"
+                      placeholder="Doe"
                     />
 
                     <SelectCountryRegisterForm
@@ -265,38 +270,45 @@ function SignUpPage() {
                       label="Username/Email"
                       name="email"
                       type="text"
+                      placeholder="johndoe@email.com"
                     />
                     <InputFieldRegisterForm
                       label="Password"
                       name="password"
                       type="password"
+                      placeholder="Password"
                     />
                     <InputFieldRegisterForm
                       name="confirmPassword"
                       label="Confirm Password"
                       type="password"
+                      placeholder="Confirm Password"
                     />
                     <InputFieldRegisterForm
                       name="firstName"
                       label="First Name"
                       type="text"
+                      placeholder="John"
                     />
                     <InputFieldRegisterForm
                       label="Last Name"
                       name="lastName"
                       type="text"
+                      placeholder="Doe"
                     />
 
                     <InputFieldRegisterForm
                       label="Publish Name"
                       name="publishName"
                       type="text"
+                      placeholder="EduBridge, this is the name that will be shown to students"
                     />
 
                     <InputFieldRegisterForm
                       label="Street"
                       name="street"
                       type="text"
+                      placeholder="Avenue 123"
                     />
 
                     <div className="relative w-full flex flex-wrap md:flex-nowrap gap-5">
@@ -305,12 +317,14 @@ function SignUpPage() {
                         name="city"
                         type="text"
                         className="w-full md:w-1/2"
+                        placeholder="New York"
                       />
                       <InputFieldRegisterForm
                         label="ZipCode"
                         name="zipCode"
                         type="text"
                         className="w-full md:w-1/2"
+                        placeholder="12345"
                       />
                     </div>
 
