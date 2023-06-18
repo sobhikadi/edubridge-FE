@@ -4,7 +4,7 @@ function ChartComponent({ period, chartData }) {
   const { startDate, endDate } = period;
 
   // Create an array of all the dates between startDate and endDate
-  const getAllDaysOfWeek = (start, end) => {
+  const getAllDays = (start, end) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
     let dates = [];
@@ -18,8 +18,10 @@ function ChartComponent({ period, chartData }) {
   };
 
   const getAllMonths = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
+    let sDate = new Date(start);
+    let eDate = new Date(end);
+    let startDate = new Date(sDate);
+    let endDate = new Date(eDate);
     let months = [];
 
     if (sDate.getFullYear() === eDate.getFullYear()) {
@@ -35,19 +37,30 @@ function ChartComponent({ period, chartData }) {
       startDate.setMonth(startDate.getMonth() + 1);
     }
 
+    // If the last month isn't the same as end month, push end month as well.
+    if (months.length > 0) {
+      const lastMonthInArray = months[months.length - 1];
+      if (
+        lastMonthInArray.getFullYear() !== endDate.getFullYear() ||
+        lastMonthInArray.getMonth() !== endDate.getMonth()
+      ) {
+        months.push(new Date(endDate.getFullYear(), endDate.getMonth(), 1));
+      }
+    }
+
     return months;
   };
 
   // Merge this array with chartData
-  const fillMissingDaysOrMonths = (datesOrMonths, chartData, isMonthly) => {
-    const filledData = datesOrMonths.map((dateOrMonth) => {
-      const formattedDateOrMonth = dateOrMonth.toISOString().split("T")[0];
-      const matchingData = chartData?.find((data) =>
-        isMonthly
-          ? new Date(data.date).getFullYear() === dateOrMonth.getFullYear() &&
-            new Date(data.date).getMonth() === dateOrMonth.getMonth()
-          : data.date === formattedDateOrMonth
-      );
+  const fillMissingDaysOrMonths = (daysOrMonths, chartData, isMonthly) => {
+    const filledData = daysOrMonths.map((dayOrMonth) => {
+      const formattedDateOrMonth = dayOrMonth.toLocaleDateString("en-CA");
+      const matchingData = chartData?.find((data) => {
+        return isMonthly
+          ? new Date(data.date).getFullYear() === dayOrMonth.getFullYear() &&
+              new Date(data.date).getMonth() === dayOrMonth.getMonth()
+          : data.date === formattedDateOrMonth;
+      });
 
       return matchingData
         ? matchingData
@@ -76,17 +89,24 @@ function ChartComponent({ period, chartData }) {
   };
 
   // Determine if it's a weekly or monthly view
-  const isWeekly =
-    (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24) <= 7;
+  const daysBetweenDates =
+    (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24);
+  const isWeekly = daysBetweenDates <= 7;
+  const isMonthly = daysBetweenDates > 7 && daysBetweenDates <= 31;
 
-  const daysOrMonths = isWeekly
-    ? getAllDaysOfWeek(startDate, endDate)
-    : getAllMonths(startDate, endDate);
+  let daysOrMonths;
+  if (isWeekly) {
+    daysOrMonths = getAllDays(startDate, endDate);
+  } else if (isMonthly) {
+    daysOrMonths = getAllDays(startDate, endDate);
+  } else {
+    daysOrMonths = getAllMonths(startDate, endDate);
+  }
 
   const filledChartData = fillMissingDaysOrMonths(
     daysOrMonths,
     chartData,
-    !isWeekly
+    isMonthly || isWeekly ? false : true
   );
 
   const selectedData = filledChartData;
@@ -115,21 +135,28 @@ function ChartComponent({ period, chartData }) {
     return startWeek === endWeek ? `${startWeek}` : `${startWeek} - ${endWeek}`;
   };
 
-  useEffect(() => {
-    console.log(chartData);
-    console.log(filledChartData);
-  }, [chartData, filledChartData]);
-
   return (
     <div>
       <div className="flex flex-col items-center justify-center py-4 sm:px-10 sm:py-10">
-        <div className="flex flex-col items-center w-full lg:w-4/6 p-6 bg-gray-800 rounded-lg sm:p-8 text-slate-200">
+        <div
+          className={`flex flex-col items-center w-full lg:w-4/6 ${
+            isMonthly && "min-w-fit"
+          } p-6 bg-gray-800 rounded-lg sm:p-8 text-slate-200`}
+        >
           <h2 className="text-xl font-bold">
-            {isWeekly ? `Weekly Subscriptions ` : "Monthly Subscriptions"}
+            {isWeekly
+              ? `Weekly Subscriptions `
+              : isMonthly
+              ? `Monthly Subscriptions `
+              : "Yearly Subscriptions"}
           </h2>
           <span className="text-sm font-semibold text-slate-200">
             {isWeekly
               ? `${getYearFromStartAndEndDates()} - Week ${getWeekNumberFromStartAndEndDate()}`
+              : isMonthly
+              ? getMonthName(startDate) !== getMonthName(endDate)
+                ? `${getMonthName(startDate)} - ${getMonthName(endDate)}`
+                : `${getMonthName(startDate)}`
               : getYearFromStartAndEndDates()}
           </span>
           <div className="flex items-end flex-grow w-full mt-2 space-x-2 sm:space-x-3">
@@ -150,6 +177,8 @@ function ChartComponent({ period, chartData }) {
                     ? `${getMonthName(data.date)} - ${new Date(
                         data.date
                       ).getDate()}`
+                    : isMonthly
+                    ? `${new Date(data.date).getDate()}`
                     : getMonthName(data.date)}
                 </span>
               </div>
