@@ -46,7 +46,6 @@ function LoginPage() {
             navigate("/controlPanel");
           })
           .catch((error) => {
-            console.log(error.response.data.message);
             setNotification({
               message: error.response.data.message,
               type: "error",

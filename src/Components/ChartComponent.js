@@ -22,9 +22,12 @@ function ChartComponent({ period, chartData }) {
     const endDate = new Date(end);
     let months = [];
 
-    if (startDate.getFullYear() === endDate.getFullYear()) {
-      startDate.setMonth(1);
-      endDate.setMonth(12);
+    if (sDate.getFullYear() === eDate.getFullYear()) {
+      startDate.setMonth(0);
+      endDate.setMonth(11);
+    } else {
+      startDate.setMonth(startDate.getMonth());
+      endDate.setMonth(endDate.getMonth());
     }
 
     while (startDate <= endDate) {

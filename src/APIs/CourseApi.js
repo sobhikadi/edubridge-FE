@@ -61,10 +61,20 @@ const CourseApi = {
     return axiosInstance.delete(`${apiUrl}/${id}`);
   },
   getCoursesStats: (filterData) => {
-    console.log(filterData);
     return axiosInstance
       .get(`${apiUrl}/stats`, { params: filterData })
-      .then((result) => result.data);
+      .then((response) => {
+        return response;
+      });
+  },
+  getMostFollowedCourses: (amount) => {
+    return axiosInstance
+      .get(`${apiUrl}/stats/mostFollowed`, {
+        params: { coursesAmount: amount },
+      })
+      .then((response) => {
+        return response;
+      });
   },
 };
 

@@ -14,8 +14,10 @@ function AdminDashboard({ userRole, publishName }) {
     selectedCategory: -1,
   };
   const [selectedCourse, setSelectedCourse] = useState("All Courses");
-
   const currentYear = new Date().getFullYear();
+  const listPageSizes = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 100];
+  const [selectedPageSize, setSelectedPageSize] = useState(10);
+  const [mostFollowedCourses, setMostFollowedCourses] = useState([]);
 
   const [periodValue, setPeriodValue] = useState({
     startDate: new Date(Date.UTC(currentYear, 0, 1))
@@ -40,6 +42,10 @@ function AdminDashboard({ userRole, publishName }) {
     setSelectedCourse(courses.find((course) => course.title === courseTitle));
   };
 
+  const getSelectedCoursesAmount = (e) => {
+    setSelectedPageSize(e.target.value);
+  };
+
   const refreshCourses = () => {
     CourseApi.getCourses(searchValue)
       .then((response) => {
@@ -55,6 +61,7 @@ function AdminDashboard({ userRole, publishName }) {
 
   useEffect(() => {
     refreshCourses();
+    getTopFollowedCourses();
     setNotification(null);
   }, []);
 
@@ -81,7 +88,13 @@ function AdminDashboard({ userRole, publishName }) {
     };
     CourseApi.getCoursesStats(filterData)
       .then((response) => {
-        setChartData(response);
+        if (response.status === 200) {
+          setChartData(response.data);
+        } else {
+          setChartData(null);
+        }
+
+        setSelectedCourse(null);
       })
       .catch((error) => {
         setNotification({
@@ -96,6 +109,27 @@ function AdminDashboard({ userRole, publishName }) {
       getCourseStats();
     }
   }, [selectedCourse, periodValue]);
+
+  const getTopFollowedCourses = () => {
+    CourseApi.getMostFollowedCourses(selectedPageSize)
+      .then((response) => {
+        if (response.status === 200) {
+          setMostFollowedCourses(response.data);
+        } else {
+          setMostFollowedCourses(null);
+        }
+      })
+      .catch((error) => {
+        setNotification({
+          message: error.response.data.message,
+          type: "error",
+        });
+      });
+  };
+
+  useEffect(() => {
+    getTopFollowedCourses();
+  }, [selectedPageSize]);
 
   return (
     <div>
@@ -120,6 +154,11 @@ function AdminDashboard({ userRole, publishName }) {
           >
             <option value="Select all Courses">Select all Courses</option>
             {courses.map((course) => {
+              {
+                if (course.publishState === "PENDING") {
+                  return;
+                }
+              }
               return (
                 <option key={course.id} value={`${course.title}`}>
                   {course.title}
@@ -136,6 +175,58 @@ function AdminDashboard({ userRole, publishName }) {
         />
       </div>
       <ChartComponent period={periodValue} chartData={chartData} />
+      <div className=" h-1 bg-slate-600 w-full"></div>
+      <h2 className=" flex gap-2 items-center text-2xl font-bold tracking-tight my-8 text-slate-200">
+        Top
+        <div className=" w-20">
+          <select
+            id="topMostFollowed"
+            name="topMostFollowed"
+            defaultValue=""
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            onChange={(e) => getSelectedCoursesAmount(e)}
+            required
+          >
+            {listPageSizes.map((size) => {
+              return (
+                <option key={size} value={`${size}`}>
+                  {size}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+        Followed Courses
+      </h2>
+      <div className="mt-6 mx-2 md:mx-0  grid grid-cols-1 min-[440px]:grid-cols-2 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        {mostFollowedCourses.map(({ course, count }) => {
+          if (course.publishState === "PENDING") return;
+          return (
+            <div key={course.id} className="group relative hover:scale-105">
+              <div className="min-h-40 aspect-w-4 aspect-h-2 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none sm:h-44">
+                <img
+                  src={course.imageUrl}
+                  alt={`image of ${course.title}`}
+                  className="h-full w-full object-fill object-center lg:h-full lg:w-full"
+                />
+              </div>
+              <div className="mt-4 flex justify-between">
+                <div>
+                  <h3 className="text-md text-slate-200">
+                    <span className="cursor-pointer">
+                      <span aria-hidden="true" className="absolute inset-0" />
+                      {course.title}
+                    </span>
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-400">
+                    {count} Followers
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

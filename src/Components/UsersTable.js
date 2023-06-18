@@ -39,7 +39,6 @@ const UsersTable = () => {
   const refreshTeachers = () => {
     TeacherApi.getAllTeachers()
       .then((response) => {
-        console.log(response);
         setUsers(response.teachers);
       })
       .catch((error) => {
